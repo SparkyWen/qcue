@@ -106,7 +106,7 @@ dev_dependencies:
   # Drives the store-screenshot harness (integration_test/store_screenshots_test.dart).
   integration_test:
     sdk: flutter
-  flutter_lints: 4.0.0
+  flutter_lints: 6.0.0
   # Generates the iOS AppIcon set (all sizes + Contents.json) from one 1024² source.
   flutter_launcher_icons: ^0.14.1
 
