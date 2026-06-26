@@ -130,21 +130,32 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: qcue-rs
-      # The official postgres image creates POSTGRES_USER as a SUPERUSER, and Postgres
-      # superusers BYPASS Row-Level Security (even FORCE RLS) — which would silently break
-      # the multi-tenant isolation tests. Demote `qcue` to a normal role (matching the dev
-      # setup in CLAUDE.md: a non-superuser with CREATEDB) so RLS is genuinely enforced.
-      # CREATEDB is required because #[sqlx::test] creates an ephemeral DB per test.
-      - name: Enforce RLS (demote qcue from the image's default superuser)
-        working-directory: ${{ github.workspace }}
-        env:
-          PGPASSWORD: qcue_dev
+      # RLS hardening. DATABASE_URL is force-pinned to the `qcue` role
+      # (qcue-rs/.cargo/config.toml), and in the postgres image that role bypasses
+      # Row-Level Security — which would make the multi-tenant isolation tests pass
+      # vacuously. `qcue` is NOT a superuser here (it can't ALTER itself over TCP), so we
+      # run the demotion through the postgres SERVICE CONTAINER's local socket (trust auth)
+      # as the bootstrap superuser. Trying `-U postgres` then `-U qcue` makes this robust to
+      # whichever role is the actual superuser; the printed role table documents the truth.
+      # CREATEDB is kept because #[sqlx::test] creates an ephemeral DB per test. Non-fatal —
+      # `cargo test` is the real gate.
+      - name: Ensure RLS is enforced for the qcue role
         run: |
-          command -v psql >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client; }
-          psql -h localhost -U qcue -d qcue -v ON_ERROR_STOP=1 \
-            -c "ALTER ROLE qcue NOSUPERUSER CREATEDB NOBYPASSRLS;"
-          psql -h localhost -U qcue -d qcue -tAc \
-            "SELECT 'qcue role -> super='||rolsuper||' createdb='||rolcreatedb||' bypassrls='||rolbypassrls FROM pg_roles WHERE rolname='qcue';"
+          set +e
+          CID=$(docker ps --filter "ancestor=postgres:16" --format '{{.ID}}' | head -1)
+          [ -z "$CID" ] && CID=$(docker ps --format '{{.ID}} {{.Image}}' | awk '/postgres/{print $1; exit}')
+          echo "postgres service container: ${CID:-<none>}"
+          su_psql() {
+            docker exec "$CID" psql -v ON_ERROR_STOP=1 -U postgres -d qcue "$@" \
+              || docker exec "$CID" psql -v ON_ERROR_STOP=1 -U qcue -d qcue "$@"
+          }
+          echo "::group::role topology (before)"
+          su_psql -c "SELECT rolname, rolsuper, rolcreatedb, rolbypassrls FROM pg_roles ORDER BY rolsuper DESC, rolname;"
+          echo "::endgroup::"
+          su_psql -c "ALTER ROLE qcue NOSUPERUSER NOBYPASSRLS CREATEDB;"
+          echo "qcue role after:"
+          su_psql -c "SELECT rolname, rolsuper, rolcreatedb, rolbypassrls FROM pg_roles WHERE rolname='qcue';"
+          true
       - name: cargo test (315+ tests; #[sqlx::test] spins an ephemeral DB per test)
         run: cargo test --locked --workspace
 
