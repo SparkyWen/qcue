@@ -6,7 +6,9 @@ members = ["protocol", "xtask", "http", "llm-api", "providers", "secrets", "stor
 edition = "2024"
 rust-version = "1.88"
 version = "0.1.0"
-license = "MIT"
+# Repo-level license is AGPL-3.0 (see top-level LICENSE). Internal crates set
+# `publish = false`, so this metadata is not stamped onto any published artifact.
+license = "AGPL-3.0-only"
 
 [workspace.dependencies]
 serde = { version = "1", features = ["derive"] }
