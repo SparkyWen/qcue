@@ -42,6 +42,7 @@ knowledge base coherent.
 - [🗺️ Roadmap](#-roadmap)
 - [🔐 A note on this repository’s history](#-a-note-on-this-repositorys-history)
 - [🤝 Contributing](#-contributing)
+- [💬 Community](#-community)
 - [🛡️ Security](#-security)
 - [📄 License](#-license)
 - [™️ Trademark](#-trademark)
@@ -264,6 +265,26 @@ Contributions are welcome! 🎉 Start with [`CONTRIBUTING.md`](CONTRIBUTING.md) 
 [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). For anything large, open an issue to discuss before
 implementing. A good first step is running the app in **stub mode** (above) to see the whole product
 end to end.
+
+---
+
+<a id="-community"></a>
+
+## 💬 Community
+
+Have feedback, questions, or want to build QCue together? Join our user group on WeChat — we'd love to
+hear how you use QCue, and developers are warmly welcome to help shape where it goes next. The group is
+primarily Chinese-speaking, but everyone is welcome.
+
+<div align="center">
+  <img src="docs/assets/qcue-wechat-group.png" alt="QCue WeChat user-group QR code" width="240" />
+  <br/>
+  <em>Scan to join the <strong>QCue · 第二大脑</strong> WeChat group.</em>
+</div>
+
+> [!NOTE]
+> WeChat group QR codes rotate roughly every 7 days. If the code above has expired, please
+> [open an issue](https://github.com/SparkyWen/qcue/issues) or email **helios@sinox.ai** and we'll add you.
 
 ---
 
