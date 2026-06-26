@@ -29,7 +29,7 @@ rewriting its history.
 **Trade-off.** Public contributors do not see the original commit history. This is mitigated by
 publishing audited source, public docs, and tracking all **future** development openly. See
 [`open-source-publishing.md`](./open-source-publishing.md) and
-[`../DEVELOPMENT_HISTORY.md`](../DEVELOPMENT_HISTORY.md).
+[`DEVELOPMENT_HISTORY.md`](DEVELOPMENT_HISTORY.md).
 
 ---
 

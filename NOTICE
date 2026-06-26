@@ -6,7 +6,7 @@ This product is licensed under the GNU Affero General Public License, version 3
 
 Portions of this software may depend on third-party components that remain under
 their own respective licenses. Where applicable, those components and their
-notices are tracked in THIRD_PARTY_NOTICES.md. No claim of third-party license
+notices are tracked in docs/THIRD_PARTY_NOTICES.md. No claim of third-party license
 compatibility is made here beyond what has been explicitly reviewed and recorded
 in that file.
 

@@ -4,7 +4,7 @@
 
 **Do not open a public GitHub issue for security vulnerabilities or for anything involving secrets.**
 
-Report privately to **wenxuner@gmail.com**. Please include:
+Report privately to **helios@sinox.ai**. Please include:
 
 - a description of the issue and its impact,
 - steps to reproduce (a minimal proof of concept if possible),

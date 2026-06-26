@@ -12,7 +12,7 @@
 [![Keys: BYOK](https://img.shields.io/badge/Keys-BYOK-2ea44f?logo=keepassxc&logoColor=white)](#-what-is-qcue)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?logo=github)](CONTRIBUTING.md)
 
-**🇬🇧 English** · [🇨🇳 简体中文](README.zh-CN.md)
+**English** · [简体中文](README.zh-CN.md)
 
 </div>
 
@@ -251,7 +251,7 @@ This is a deliberate engineering decision, **not** an attempt to hide the projec
 history is a permanent exposure surface — it can carry old secrets, internal operations notes,
 deployment topology, third-party material that cannot be relicensed, and large artifacts. Rather than
 rewrite a long private history and hope nothing was missed, QCue publishes a **curated, audited
-snapshot** and develops openly from here. See [`DEVELOPMENT_HISTORY.md`](DEVELOPMENT_HISTORY.md) for
+snapshot** and develops openly from here. See [`DEVELOPMENT_HISTORY.md`](docs/DEVELOPMENT_HISTORY.md) for
 the full rationale and what is / isn’t included.
 
 ---
@@ -287,7 +287,7 @@ Please report vulnerabilities **privately** — do not open public issues for se
 QCue is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)** — see
 [`LICENSE`](LICENSE). Because QCue can be operated as a network service, AGPL-3.0 ensures that
 modifications offered to users over a network are also made available as source. See also
-[`NOTICE`](NOTICE) and [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+[`NOTICE`](NOTICE) and [`THIRD_PARTY_NOTICES.md`](docs/THIRD_PARTY_NOTICES.md).
 
 ---
 
@@ -296,7 +296,7 @@ modifications offered to users over a network are also made available as source.
 ## ™️ Trademark
 
 The QCue name, logo, and brand assets are reserved. The AGPL-3.0 grant covers source code, **not**
-brand usage. See [`TRADEMARKS.md`](TRADEMARKS.md).
+brand usage. See [`TRADEMARKS.md`](docs/TRADEMARKS.md).
 
 ---
 
@@ -304,6 +304,6 @@ brand usage. See [`TRADEMARKS.md`](TRADEMARKS.md).
 
 **Built with 🦀 Rust · 📱 Flutter · ❤️ open source.**
 
-[⬆ Back to top](#-qcue) · [🇨🇳 切换到中文](README.zh-CN.md)
+[⬆ Back to top](#-qcue) · [切换到中文](README.zh-CN.md)
 
 </div>

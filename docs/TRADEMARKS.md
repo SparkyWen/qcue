@@ -18,4 +18,4 @@ In short:
 
 This page reserves ordinary brand and naming rights only; it does not attempt to add restrictions
 beyond the source-code license or normal trademark practice. Questions about brand usage:
-**wenxuner@gmail.com**.
+**helios@sinox.ai**.

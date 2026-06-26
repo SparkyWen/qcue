@@ -26,7 +26,7 @@ If you ever expose a secret, **rotate/revoke it immediately** and notify a maint
 ## Third-party code
 
 If you add or vendor third-party code, ensure its license is compatible with AGPL-3.0, preserve its
-notices, and record it in [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md). When in doubt, ask
+notices, and record it in [`THIRD_PARTY_NOTICES.md`](docs/THIRD_PARTY_NOTICES.md). When in doubt, ask
 before adding it.
 
 ## Workflow

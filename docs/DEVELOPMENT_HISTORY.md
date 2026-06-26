@@ -48,7 +48,7 @@ commits:
 
 ## Milestones
 
-Public milestones will be recorded here and in [`CHANGELOG.md`](./CHANGELOG.md) as releases are cut.
+Public milestones will be recorded here and in [`CHANGELOG.md`](../CHANGELOG.md) as releases are cut.
 To avoid misrepresenting private history, specific historical dates are intentionally omitted.
 
 - **TODO:** Initial public release — date and contents to be filled in when the first public tag is

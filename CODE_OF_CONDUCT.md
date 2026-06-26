@@ -25,7 +25,7 @@ communication — and to public conduct that affects the safety of the community
 
 ## Enforcement
 
-Violations may be reported privately to **wenxuner@gmail.com**. Reports will be reviewed and handled
+Violations may be reported privately to **helios@sinox.ai**. Reports will be reviewed and handled
 discreetly. Maintainers may take any action they deem appropriate, including warnings, removal of
 contributions, or banning from project spaces.
 

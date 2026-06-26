@@ -7,7 +7,7 @@ is **auto-generated** — do not edit by hand. Regenerate with:
 
 Generated: 2026-06-26
 
-QCue's own source code is licensed under **AGPL-3.0-only** (see [`LICENSE`](./LICENSE));
+QCue's own source code is licensed under **AGPL-3.0-only** (see [`LICENSE`](../LICENSE));
 the notices below cover only the third-party dependencies QCue redistributes.
 
 It covers two dependency sets:

@@ -12,7 +12,7 @@
 [![Keys: BYOK](https://img.shields.io/badge/Keys-BYOK-2ea44f?logo=keepassxc&logoColor=white)](#-qcue-是什么)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?logo=github)](CONTRIBUTING.md)
 
-[🇬🇧 English](README.md) · **🇨🇳 简体中文**
+[English](README.md) · **简体中文**
 
 </div>
 
@@ -243,7 +243,7 @@ cargo clippy --all-targets -- -D warnings
 这是一个深思熟虑的工程决策，**并非**试图掩盖项目的成熟度。Git 历史是一个永久的暴露面 —— 它可能
 携带旧密钥、内部运维笔记、部署拓扑、无法被重新授权的第三方材料以及大体积产物。与其重写一段漫长的
 私有历史、再寄望于「什么都没漏」，QCue 选择发布一份**精选、经审计的快照**，并从此公开开发。完整
-理由以及「包含 / 不包含什么」见 [`DEVELOPMENT_HISTORY.md`](DEVELOPMENT_HISTORY.md)。
+理由以及「包含 / 不包含什么」见 [`DEVELOPMENT_HISTORY.md`](docs/DEVELOPMENT_HISTORY.md)。
 
 ---
 
@@ -275,7 +275,7 @@ cargo clippy --all-targets -- -D warnings
 
 QCue 采用 **GNU Affero 通用公共许可证 v3.0（AGPL-3.0）** —— 见 [`LICENSE`](LICENSE)。由于 QCue
 可以作为网络服务运行，AGPL-3.0 确保：通过网络提供给用户的修改也必须以源码形式提供。另见
-[`NOTICE`](NOTICE) 与 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。
+[`NOTICE`](NOTICE) 与 [`THIRD_PARTY_NOTICES.md`](docs/THIRD_PARTY_NOTICES.md)。
 
 ---
 
@@ -284,7 +284,7 @@ QCue 采用 **GNU Affero 通用公共许可证 v3.0（AGPL-3.0）** —— 见 [
 ## ™️ 商标
 
 QCue 的名称、标志与品牌资产均予保留。AGPL-3.0 授权覆盖的是源代码，**而非**品牌使用。见
-[`TRADEMARKS.md`](TRADEMARKS.md)。
+[`TRADEMARKS.md`](docs/TRADEMARKS.md)。
 
 ---
 
@@ -292,6 +292,6 @@ QCue 的名称、标志与品牌资产均予保留。AGPL-3.0 授权覆盖的是
 
 **以 🦀 Rust · 📱 Flutter · ❤️ 开源 构建。**
 
-[⬆ 回到顶部](#-qcue) · [🇬🇧 Switch to English](README.md)
+[⬆ 回到顶部](#-qcue) · [Switch to English](README.md)
 
 </div>
