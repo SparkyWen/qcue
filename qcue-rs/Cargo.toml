@@ -32,7 +32,7 @@ aes-gcm = "0.10"
 anyhow = "1"
 axum = { version = "0.8", features = ["macros", "ws"] }
 tower = { version = "0.5", features = ["limit", "buffer", "util"] }
-tower-http = { version = "0.6", features = ["set-header", "cors", "limit", "trace"] }
+tower-http = { version = "0.7", features = ["set-header", "cors", "limit", "trace"] }
 tokio-util = { version = "0.7", features = ["rt"] }
 tokio-stream = { version = "0.1", features = ["sync"] }
 argon2 = "0.5"
