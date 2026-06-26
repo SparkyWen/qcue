@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QCue — Privacy Policy</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 760px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem;
+         font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         color: #1a1a1a; background: #fff; }
+  @media (prefers-color-scheme: dark) { body { color: #e6e6e6; background: #14161a; } a { color: #6ea8fe; } }
+  h1 { font-size: 1.9rem; margin: 0 0 .25rem; }
+  h2 { font-size: 1.2rem; margin: 2.2rem 0 .6rem; }
+  .meta { color: #777; font-size: .9rem; margin-bottom: 2rem; }
+  ul { padding-left: 1.25rem; }
+  li { margin: .3rem 0; }
+  code { background: rgba(127,127,127,.15); padding: .1em .35em; border-radius: 4px; font-size: .9em; }
+  .note { border-left: 3px solid #6ea8fe; padding: .5rem .9rem; background: rgba(110,168,254,.08); border-radius: 4px; }
+  footer { margin-top: 3rem; color: #888; font-size: .85rem; }
+</style>
+</head>
+<body>
+<h1>QCue Privacy Policy</h1>
+<p class="meta">Last updated: 2026-06-18</p>
+
+<p>QCue ("QCue", "we", "us") is a capture-first personal knowledge app: you jot fleeting ideas by
+text or voice, and a large language model (LLM) of <em>your</em> choosing distills them into a private
+markdown wiki. This policy explains what we collect, why, and the choices you have. We designed QCue to
+keep your data minimal, private to you, and under your control.</p>
+
+<div class="note"><strong>In short:</strong> We collect only what the app needs to function. We do
+<strong>not</strong> use third-party advertising or analytics SDKs, and we do <strong>not</strong> track
+you across other apps or websites or sell your data.</div>
+
+<h2>1. Information we collect</h2>
+<ul>
+  <li><strong>Account information</strong> — the email address you register with and a securely hashed
+  password (or a one-time sign-in link). Used to create and secure your account.</li>
+  <li><strong>Content you create</strong> — the notes, ideas, voice recordings and their transcripts,
+  shared text/links, and the wiki pages QCue generates from them. This is your "second brain" and is
+  stored on your device and, when you are signed in, synced to your private, tenant-isolated space on
+  our servers.</li>
+  <li><strong>Provider API keys you add (BYOK — "bring your own key")</strong> — if you choose to use an
+  LLM or cloud speech provider, the API key you enter is stored encrypted. We never display it again in
+  full and never write it to logs in plaintext.</li>
+  <li><strong>Operational data</strong> — basic, non-advertising information needed to run the service
+  (e.g., a per-account usage/cost ledger for the LLM calls you make, and standard server logs that may
+  include IP address and timestamps for security and abuse-prevention).</li>
+</ul>
+
+<h2>2. How we use your information</h2>
+<ul>
+  <li>To provide the core features: capture, sync, the generated wiki, recall/search, and the nightly
+  consolidation ("Auto-Dream").</li>
+  <li>To authenticate you and keep your account secure.</li>
+  <li>To operate, maintain, debug, and protect the service against abuse.</li>
+</ul>
+<p>We do not use your content to train our own models, and we do not use it for advertising.</p>
+
+<h2>3. Voice and speech</h2>
+<p>When you dictate a note, transcription is performed <strong>on your device</strong> wherever the
+operating system supports it. If on-device recognition is unavailable, or you opt into higher-accuracy
+cloud transcription, the audio may be sent to a cloud speech-to-text provider to produce the transcript.
+The app discloses this before recording. Only the resulting text transcript is stored as your note;
+the raw audio is not retained after transcription.</p>
+
+<h2>4. Location (optional, off by default)</h2>
+<p>QCue can optionally tag a capture with your precise location. This feature is <strong>off by
+default</strong> and only activated after you explicitly enable "Tag captures with location" in
+Settings. When enabled, the app reads your device's GPS coordinates at the moment you make a capture
+and stores the latitude/longitude with that capture so you have context for where the idea occurred.
+Location is never collected in the background and is never polled at any time other than the instant
+you actively submit a capture. The coordinates are stored with your note in your private vault and are
+used solely for your own context — they are not used for advertising, shared with third parties
+(other than the infrastructure and BYOK providers that store and process your content generally), or
+transmitted unless you sync your captures to our servers.</p>
+
+<h2>5. Third-party LLM and speech providers (BYOK)</h2>
+<p>QCue's intelligence is powered by providers <em>you</em> select and connect with your own API key
+(for example OpenAI, Anthropic, DeepSeek, or any compatible provider). To generate or recall content,
+the relevant text from your notes is sent to the provider you configured, using your key, so it can
+return a result. That content is processed by the third-party provider under <strong>their</strong>
+terms and privacy policy, which govern how they handle it. We act only as the conduit that uses your key
+on your behalf; please review your chosen provider's privacy practices.</p>
+
+<h2>6. Storage, security, and isolation</h2>
+<ul>
+  <li>All network traffic uses HTTPS/TLS encryption in transit.</li>
+  <li>API keys are encrypted at rest using authenticated encryption (AES-GCM) and, on device, the
+  operating-system secure enclave/Keychain; biometric unlock can be required before a key is read.</li>
+  <li>On our servers, each account's data is isolated at the database level (row-level security), so one
+  account cannot access another's data.</li>
+  <li>Captured ideas are stored locally first so that nothing is lost even when you are offline.</li>
+</ul>
+<p>No method of transmission or storage is 100% secure, but we apply industry-standard safeguards.</p>
+
+<h2>7. Data retention and deletion</h2>
+<p>Your content is kept until you delete it or close your account. You can delete individual items in
+the app, and you can <strong>delete your account</strong> from within the app; deleting your account
+removes your synced content and provider keys from our active systems. Backups and security logs are
+purged on a rolling schedule.</p>
+
+<h2>8. How we share information</h2>
+<p>We do not sell your personal information. We share data only:</p>
+<ul>
+  <li>with the LLM/speech providers you choose to connect (see section 5);</li>
+  <li>with infrastructure providers that host and operate the service on our behalf, under
+  confidentiality obligations; and</li>
+  <li>where required by law, or to protect the rights, safety, and security of users and the service.</li>
+</ul>
+
+<h2>9. Your rights</h2>
+<p>Depending on where you live, you may have rights to access, correct, export, or delete your personal
+data, and to object to or restrict certain processing. If you are in the EEA or UK (GDPR) or California
+(CCPA/CPRA), these rights apply to you; we do not "sell" or "share" personal information for
+cross-context behavioral advertising. To exercise any right, contact us using the details below.</p>
+
+<h2>10. Children</h2>
+<p>QCue is not directed to children under 13 (or the equivalent minimum age in your jurisdiction) and we
+do not knowingly collect their personal information.</p>
+
+<h2>11. International transfers</h2>
+<p>QCue is operated from infrastructure that may be located in a different country from yours, and the
+providers you connect may process data in other countries. Where required, we rely on appropriate legal
+transfer mechanisms.</p>
+
+<h2>12. Changes to this policy</h2>
+<p>We may update this policy from time to time. Material changes will be reflected by updating the "Last
+updated" date above and, where appropriate, by notice in the app.</p>
+
+<h2>13. Contact</h2>
+<p>Questions or requests regarding this policy or your data: <a href="mailto:privacy@qcue.cn">privacy@qcue.cn</a>.</p>
+
+<footer>QCue · This page is the official privacy policy referenced from the App Store listing.</footer>
+</body>
+</html>
