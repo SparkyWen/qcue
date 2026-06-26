@@ -79,7 +79,7 @@ dependencies:
   # sign-in. iOS-only button (see login_screen.dart). Returns an Apple identity JWT verified by
   # the backend at POST /v1/auth/social (provider="apple"), mirroring the Google path.
   # SECURITY: pinned EXACT (was ^6.1.4) — same rationale as flutter_appauth above.
-  sign_in_with_apple: 6.1.4
+  sign_in_with_apple: 8.1.0
   # AU-R1/R14 — Shorebird code-push status surface (read-only; the engine does the OTA). Pinned exact.
   shorebird_code_push: 2.0.4
   # AU-R16 — read the running build number to compare against the release manifest. Pinned exact.
