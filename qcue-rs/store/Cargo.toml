@@ -1,0 +1,22 @@
+[package]
+name = "store"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+protocol = { path = "../protocol" }
+linksan = { path = "../utils/linksan" }
+search-route = { path = "../utils/search-route" }
+sqlx.workspace = true
+redis.workspace = true
+uuid.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+tokio.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+
+[lints]
+workspace = true

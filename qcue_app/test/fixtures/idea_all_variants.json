@@ -1,0 +1,7 @@
+[
+  {"id":"018f-1","tenant_id":"t1","user_id":"u1","kind":"text","body":"a","origin":"capture","ingest_state":"pending","captured_at":"2026-06-13T10:00:00Z"},
+  {"id":"018f-2","tenant_id":"t1","user_id":"u1","kind":"voice","body":"b","origin":"voice","ingest_state":"ingesting","captured_at":"2026-06-13T10:01:00Z","transcript_provider":"whisper"},
+  {"id":"018f-3","tenant_id":"t1","user_id":"u1","kind":"text","body":"c","origin":"capture","ingest_state":"ingested","captured_at":"2026-06-13T10:02:00Z"},
+  {"id":"018f-4","tenant_id":"t1","user_id":"u1","kind":"text","body":"d","origin":"capture","ingest_state":"skipped_redundant","captured_at":"2026-06-13T10:03:00Z"},
+  {"id":"018f-5","tenant_id":"t1","user_id":"u1","kind":"clip","body":"e","origin":"web","source_url":"https://x","ingest_state":"failed","captured_at":"2026-06-13T10:04:00Z"}
+]

@@ -1,0 +1,15 @@
+# QCue S4 analyzer config. Enforces the note-app code hygiene the plan calls
+# for: no `print`, prefer const, trailing commas for clean diffs.
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    avoid_print: true
+    prefer_const_constructors: true
+    prefer_const_constructors_in_immutables: true
+    prefer_const_declarations: true
+    require_trailing_commas: true
+
+analyzer:
+  errors:
+    invalid_use_of_protected_member: error

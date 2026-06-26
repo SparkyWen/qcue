@@ -1,0 +1,19 @@
+[package]
+name = "xtask"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+name = "xtask"
+path = "src/lib.rs"
+
+[[bin]]
+name = "xtask"
+path = "src/main.rs"
+
+[dependencies]
+serde.workspace = true
+
+[lints]
+workspace = true

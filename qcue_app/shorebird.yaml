@@ -1,0 +1,13 @@
+# AU-R1 — Shorebird code-push config. The app_id below is the Shorebird app identifier created by
+# `shorebird init`; it is NOT a secret (the auth secret is SHOREBIRD_TOKEN, env-only) and is shared
+# across build machines (Mac=iOS, Windows=Android). See docs/app-update-runbook.md §0.
+# Learn more at https://docs.shorebird.dev
+
+# Your app_id is the unique identifier assigned to your app. It is used to identify your app when
+# requesting patches from Shorebird's servers. It is not a secret and can be shared publicly.
+app_id: 0070bf9d-1090-4949-b4be-6cbd53dc1c8c
+
+# auto_update: true — Shorebird downloads Dart-only patches in the background on launch and applies
+# them on the next natural launch (seamless / 无感, AU-R4). Set false to gate updates via
+# package:shorebird_code_push instead.
+auto_update: true

@@ -1,0 +1,12 @@
+[package]
+name = "fence"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+name = "fence"
+path = "src/lib.rs"
+
+[lints]
+workspace = true

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- QCue networking policy. Production (app.qcue.cn) and any other host stay
+     HTTPS-only. Cleartext is permitted ONLY for the local-development backends
+     reached from the emulator/host, so a build-time QCUE_BASE_URL override of
+     http://10.0.2.2:9200 (or a localhost) actually connects on Android 9+ (which
+     blocks cleartext by default and otherwise throws "CLEARTEXT communication not
+     permitted"). -->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+    </domain-config>
+    <base-config cleartextTrafficPermitted="false"/>
+</network-security-config>

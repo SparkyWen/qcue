@@ -1,0 +1,27 @@
+[package]
+name = "ffi"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+protocol = { path = "../protocol" }
+router = { path = "../router" }
+serde_json.workspace = true
+futures-util.workspace = true
+tokio.workspace = true
+tokio-util = { version = "0.7", features = ["rt"] }
+uuid.workspace = true
+# The flutter_rust_bridge RUNTIME crate. It compiles standalone (no Flutter/Dart toolchain
+# required); the `StreamSink<T>` ALIAS + `#[frb]` glue are emitted by `flutter_rust_bridge_codegen`
+# into `frb_generated.rs` in S4. We wire the codegen-independent `for_generated::StreamSinkBase`
+# into the public surface now so S4 only has to add the macro annotations. See ffi/README.md.
+flutter_rust_bridge = "2.12"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }
+tokio-util = { version = "0.7", features = ["rt"] }
+uuid = { workspace = true }
+
+[lints]
+workspace = true

@@ -1,0 +1,22 @@
+[package]
+name = "providers"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+protocol = { path = "../protocol" }
+http = { path = "../http" }
+llm-api = { path = "../llm-api" }
+serde.workspace = true
+serde_json.workspace = true
+async-trait.workspace = true
+reqwest.workspace = true
+tokio = { workspace = true, features = ["time", "sync"] }
+once_cell = "1"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }
+
+[lints]
+workspace = true

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- QCue S5-R27: the device-cached BYOK wrapped-key store is ThisDeviceOnly —
+     it is excluded from cloud backup and device-to-device transfer, so a lost or
+     migrated device cannot carry the cached key (the server vault is the source
+     of truth). -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="qcue_secure_keys.xml"/>
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="qcue_secure_keys.xml"/>
+    </device-transfer>
+</data-extraction-rules>

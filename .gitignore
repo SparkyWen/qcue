@@ -1,0 +1,60 @@
+# QCue — root .gitignore for the public mirror.
+# Per-crate / per-app .gitignore files add finer-grained rules.
+
+# ---- Rust ----
+/target/
+**/target/
+*.rs.bk
+*.pdb
+
+# ---- Flutter / Dart ----
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+**/build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# ---- Android ----
+**/android/.gradle/
+**/android/local.properties
+**/android/key.properties
+*.jks
+*.keystore
+
+# ---- iOS / macOS ----
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/Podfile.lock
+*.mobileprovision
+*.p8
+*.p12
+
+# ---- Secrets / local env (never commit) ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cer
+*.crt
+google-services.json
+GoogleService-Info.plist
+
+# ---- Release artifacts (distributed via GitHub Releases) ----
+*.apk
+*.aab
+*.ipa
+
+# ---- Editor / OS ----
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+*.swp
+*~

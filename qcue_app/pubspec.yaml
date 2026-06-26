@@ -1,0 +1,139 @@
+name: qcue_app
+description: "QCue — capture-first second brain (Flutter app)."
+publish_to: none
+# version: <marketing>+<build>. The +N build suffix below is a PLACEHOLDER — the release scripts
+# (scripts/deploy-ios.sh, scripts/deploy-android.ps1) derive the REAL build number from git
+# (`git rev-list --count HEAD`) and pass it via --build-number, so iOS and Android always share ONE
+# number for one commit (no divergence, no per-machine auto-bump). Bump the marketing version (1.0.x)
+# here only when you want a new user-facing version; leave the "+1" suffix as-is.
+version: 1.0.5+1
+
+environment:
+  sdk: ^3.12.2
+  flutter: ">=3.24.0"
+
+# QCue S4: versions pinned (exact) so the foundation builds reproducibly.
+# riverpod 2.x / go_router 14.x are the API levels the S4 plan targets;
+# google_fonts supplies Inter + JetBrains Mono (master §10 typography).
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: 1.0.9
+  flutter_riverpod: 2.6.1
+  go_router: 14.8.1
+  google_fonts: 6.3.3
+  collection: 1.19.1
+  shared_preferences: 2.5.5
+  # QCue S4 network milestone: REST/RPC over http + the bidirectional WSS
+  # JSON-RPC-lite turn channel over web_socket_channel. Pinned (exact) so the
+  # network client builds reproducibly (the SSE client is hand-rolled — see
+  # core/net/sse_client.dart — because EventSource can't send headers).
+  http: 1.6.0
+  web_socket_channel: 3.0.3
+  # QCue S4 offline milestone (master §10 offline-capable; D5/D6 local-first):
+  # the persistent read-cache + outbound capture queue is sqlite3 via dart:ffi.
+  # `sqlite3` provides the FFI bindings; `sqlite3_flutter_libs` bundles the
+  # native `libsqlite3.so` that Android genuinely loads. iOS/macOS and the Linux
+  # test host instead open the OS-provided SQLite via explicit loader overrides
+  # (the bundled lib segfaults under the iOS SPM build) — see
+  # core/offline/sqlite_cache_store.dart. NOTE: system SQLite has no FTS5/rtree,
+  # so a future D8 full-text search must not assume them on iOS. `path_provider`
+  # resolves the on-device app-support dir for the cache DB. Pinned for repro.
+  # SECURITY (dep): keep the `sqlite3` Dart binding on 2.x (the 3.x line is a full
+  # migration — it drops package:sqlite3/open.dart + the loader overrides this file
+  # relies on, and moves to the native-assets build model) but bump
+  # sqlite3_flutter_libs 0.5.27→0.5.41 so the native lib Android BUNDLES advances
+  # SQLite 3.47.2 → 3.51.1 — past the CVE-2025-6965 chain (fixed 3.50.2). No
+  # untrusted-SQL surface exists today (all statements parameterized, local-only);
+  # this is hygiene + a prerequisite before D8 full-text search. iOS/macOS open the OS
+  # SQLite (unaffected); the bundled bump is Android-runtime — confirm on an Android build.
+  # NOTE: the proper sqlite3 2.x→3.x migration (drop this pkg; rewrite the loader in
+  # sqlite_cache_store.dart per simolus3/sqlite3.dart UPGRADING_TO_V3.md) is its own PR.
+  sqlite3: 2.4.6
+  sqlite3_flutter_libs: 0.5.41
+  path_provider: 2.1.6
+  # QCue D4 cloud voice STT: record an audio clip (m4a/AAC, 44.1 kHz mono) for upload
+  # to /v1/transcribe (OpenAI gpt-4o-transcribe). Behind the AudioRecorderFacade seam
+  # so host tests use a fake and never touch the platform channel.
+  record: 5.2.1
+  gpt_markdown: ^1.1.7
+  # QCue LOC-R4: optional action-time GPS fix attached to captures (off by default).
+  # Pinned exact to match the repo's reproducible-build convention.
+  geolocator: 13.0.1
+  # "Sign in with Google" via our self-hosted OIDC provider (auth.qcue.cn). Drives the
+  # Authorization-Code + PKCE flow as a public client and returns the auth.qcue.cn
+  # access_token, which core/auth/qcue_oidc.dart exchanges at POST /v1/auth/oidc for a
+  # native qcue session. iOS runs it over ASWebAuthenticationSession (Info.plist `qcue`
+  # scheme); Android needs the appAuthRedirectScheme manifestPlaceholder (build.gradle.kts).
+  # ^12 (was ^8): 9.0.1+ moves to AppAuth-iOS 2.x, which is what GoogleSignIn 9.x (pulled by
+  # google_sign_in 7.x below) also requires — 8.x pinned AppAuth 1.7.6 and could not coexist.
+  # SECURITY: pinned EXACT (was ^12.0.0). The auth/token-acquisition path is security-critical;
+  # an unguarded `pub upgrade` must not silently pull a new minor here. Bump deliberately.
+  flutter_appauth: 12.0.1
+  # NG-R12 "Sign in with Google" — NATIVE account picker. On Android this uses the OS Credential
+  # Manager (the bottom-sheet account chooser, like ChatGPT/Claude); on iOS the GoogleSignIn SDK.
+  # Returns a Google ID token verified by the backend at POST /v1/auth/social.
+  # SECURITY: pinned EXACT (was ^7.0.0) — same rationale as flutter_appauth above.
+  google_sign_in: 7.2.0
+  # SIWA-R1 "Sign in with Apple" — required by App Store Guideline 4.8 because we offer Google
+  # sign-in. iOS-only button (see login_screen.dart). Returns an Apple identity JWT verified by
+  # the backend at POST /v1/auth/social (provider="apple"), mirroring the Google path.
+  # SECURITY: pinned EXACT (was ^6.1.4) — same rationale as flutter_appauth above.
+  sign_in_with_apple: 6.1.4
+  # AU-R1/R14 — Shorebird code-push status surface (read-only; the engine does the OTA). Pinned exact.
+  shorebird_code_push: 2.0.4
+  # AU-R16 — read the running build number to compare against the release manifest. Pinned exact.
+  package_info_plus: 8.3.0
+  # AU-R21 — open the App Store (iOS full-update CTA). Pinned exact.
+  url_launcher: 6.3.1
+  # AU-R21 SECURITY — SHA-256 the downloaded APK before handing it to the OS installer
+  # (defense in depth atop TLS + the installer's same-signer check). Pinned exact.
+  crypto: 3.0.7
+
+# `record 5.2.1` caps its Linux impl at `record_linux: '>=0.5.0 <1.0.0'` (newest = 0.7.2)
+# while pulling `record_platform_interface: ^1.2.0` (resolves to 1.6.0). The stale 0.7.2
+# never implemented the interface's `startStream` / `hasPermission(request:)` (added in
+# 1.0.0 / 1.5.0), so the Dart kernel snapshot — which compiles ALL endorsed platform
+# impls, Linux included, even for an iOS/Android build — fails to compile. We only ship
+# iOS/Android, so bump just the Linux impl to the conforming 1.x (targets interface ^1.5.0,
+# satisfied by 1.6.0). This leaves record_darwin/record_android + the interface untouched.
+dependency_overrides:
+  record_linux: 1.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # Drives the store-screenshot harness (integration_test/store_screenshots_test.dart).
+  integration_test:
+    sdk: flutter
+  flutter_lints: 4.0.0
+  # Generates the iOS AppIcon set (all sizes + Contents.json) from one 1024² source.
+  flutter_launcher_icons: ^0.14.1
+
+flutter:
+  assets:
+    - shorebird.yaml
+  uses-material-design: true
+
+# QCue brand app icon (store launch): the warm-ivory (#EAE2D9) Qcue mark from the
+# 2026-06 asset pack (docs/qcue-assets). Run `dart run flutter_launcher_icons` after
+# changing any source PNG below. remove_alpha_ios is required — App Store icons must
+# not have an alpha channel. Android ships a true adaptive icon: a dedicated padded
+# foreground over the flat warm-ivory background (NOT the full bleed tile), plus a
+# monochrome layer so Android 13+ themed (tinted) icons render the mark correctly.
+#   - image_path                : full-bleed master, used for iOS + legacy mipmaps
+#   - adaptive_icon_foreground  : 432px transparent mark, safe-zone padded for 108dp
+#   - adaptive_icon_monochrome  : single-tone silhouette for Android 13 themed icons
+flutter_launcher_icons:
+  ios: true
+  android: true
+  image_path: "assets/icon/qcue_icon_1024.png"
+  remove_alpha_ios: true
+  min_sdk_android: 21
+  adaptive_icon_background: "#EAE2D9"
+  adaptive_icon_foreground: "assets/icon/qcue_adaptive_foreground.png"
+  adaptive_icon_monochrome: "assets/icon/qcue_adaptive_monochrome.png"
+  # The 432px foreground/monochrome already carry the designer's safe-zone padding
+  # (the asset pack's own adaptive XML used the drawable with no inset), so suppress
+  # the tool's default 16% inset to avoid double-padding and a too-small mark.
+  adaptive_icon_foreground_inset: 0

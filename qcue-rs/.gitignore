@@ -1,0 +1,4 @@
+/target
+**/*.rs.bk
+# Generated ts-rs / schemars bindings (regenerated from the Rust types in CI/build)
+**/bindings/

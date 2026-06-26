@@ -1,0 +1,14 @@
+QCue
+Copyright (c) 2026 Xuner Wen
+
+This product is licensed under the GNU Affero General Public License, version 3
+(AGPL-3.0). A copy of the license is provided in the LICENSE file.
+
+Portions of this software may depend on third-party components that remain under
+their own respective licenses. Where applicable, those components and their
+notices are tracked in THIRD_PARTY_NOTICES.md. No claim of third-party license
+compatibility is made here beyond what has been explicitly reviewed and recorded
+in that file.
+
+If you redistribute QCue or a modified version, you must retain this NOTICE file
+and comply with the terms of the AGPL-3.0 license.

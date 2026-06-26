@@ -1,0 +1,13 @@
+[
+  {"event":"session_started","payload":{"thread_id":"th-1"}},
+  {"event":"tool_call","payload":{"name":"recall_search","args":{"pattern":"embeddings"}}},
+  {"event":"tool_result","payload":{"name":"recall_search","rows":3}},
+  {"event":"message_delta","payload":{"text":"You decided against "}},
+  {"event":"message_delta","payload":{"text":"embeddings."}},
+  {"event":"citation","payload":{"rel_path":"source.md","start_line":42,"end_line":42}},
+  {"event":"usage","payload":{"input_tokens":120,"output_tokens":40,"reasoning_tokens":0}},
+  {"event":"done","payload":{}},
+  {"event":"dream_started","payload":{"job_id":"d-1","sessions":6}},
+  {"event":"progress","payload":{"text":"Skimmed index.md","tool_use_count":3,"pages_touched":["index.md"]}},
+  {"event":"completed","payload":{"pages_improved":7}}
+]

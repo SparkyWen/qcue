@@ -1,0 +1,35 @@
+[package]
+name = "ideas"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+name = "ideas"
+path = "src/lib.rs"
+
+[dependencies]
+# `wiki` is a LOWER layer (it never imports `ideas`), so this runtime dep introduces no cycle. The
+# harness-driven DreamAgent lives here (where the router seam + the shared `build_tool_policy` are
+# reachable) and reuses wiki's cost guard / 4-phase prompt / candidates gate / path guard.
+wiki = { path = "../wiki" }
+fence = { path = "../utils/fence" }
+search-route = { path = "../utils/search-route" }
+store = { path = "../store" }
+protocol = { path = "../protocol" }
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+sqlx.workspace = true
+async-trait.workspace = true
+tokio-util.workspace = true
+sha2 = "0.10"
+
+[dev-dependencies]
+tempfile = "3"
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+
+[lints]
+workspace = true

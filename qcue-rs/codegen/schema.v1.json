@@ -1,0 +1,1001 @@
+{
+  "AppReleaseManifest": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "AppReleaseManifest",
+    "description": "AU-R7 — the app release manifest (`GET /v1/app/release?platform=…`). Global, non-tenant, no secrets. `latest_build`/`min_supported_build` are the integer `pubspec.yaml` build numbers the client compares against its own. `android_apk_path` (Android only) points at the JWT-authenticated proxy `/v1/app/apk/{build}`; `ios_app_store_url` (iOS only) is the App Store deep link.",
+    "type": "object",
+    "required": [
+      "changelog",
+      "latest_build",
+      "latest_version",
+      "min_supported_build",
+      "platform",
+      "published_at"
+    ],
+    "properties": {
+      "android_apk_path": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "android_apk_sha256": {
+        "description": "Android only — the expected SHA-256 (lowercase hex) of the APK served at `android_apk_path`, so the client can verify the sideloaded download's integrity (tamper/MITM detection). None ⇒ the server has no hash on file (older manifest) and the client treats it as unverified.",
+        "default": null,
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "changelog": {
+        "type": "string"
+      },
+      "ios_app_store_url": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "latest_build": {
+        "type": "integer",
+        "format": "uint32",
+        "minimum": 0.0
+      },
+      "latest_version": {
+        "type": "string"
+      },
+      "min_supported_build": {
+        "type": "integer",
+        "format": "uint32",
+        "minimum": 0.0
+      },
+      "platform": {
+        "type": "string"
+      },
+      "published_at": {
+        "type": "string"
+      }
+    }
+  },
+  "CaptureDetail": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "CaptureDetail",
+    "description": "The full detail of one capture (GET /v1/captures/{id}) — CAP-R1.",
+    "type": "object",
+    "required": [
+      "body",
+      "captured_at",
+      "id",
+      "ingest_state",
+      "kind",
+      "origin"
+    ],
+    "properties": {
+      "body": {
+        "type": "string"
+      },
+      "captured_at": {
+        "type": "string"
+      },
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingest_state": {
+        "type": "string"
+      },
+      "kind": {
+        "type": "string"
+      },
+      "lat": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "double"
+      },
+      "lng": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "double"
+      },
+      "loc_accuracy_m": {
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "float"
+      },
+      "origin": {
+        "type": "string"
+      },
+      "source_page_slug": {
+        "description": "The slug of the distilled SOURCE page (DIG-R4), if this capture has been ingested. None ⇒ pending.",
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "source_url": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    }
+  },
+  "CaptureParams": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "CaptureParams",
+    "type": "object",
+    "required": [
+      "kind",
+      "origin"
+    ],
+    "properties": {
+      "body": {
+        "default": null,
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "captured_at": {
+        "description": "LOC-R3/Part F — the client's action-time capture instant (RFC3339 UTC). None ⇒ server now().",
+        "default": null,
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "kind": {
+        "type": "string"
+      },
+      "lat": {
+        "description": "LOC-R1 — optional precise location captured at action-time (off by default).",
+        "default": null,
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "double"
+      },
+      "lng": {
+        "default": null,
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "double"
+      },
+      "loc_accuracy_m": {
+        "default": null,
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "float"
+      },
+      "origin": {
+        "type": "string"
+      },
+      "source_url": {
+        "default": null,
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "additionalProperties": false
+  },
+  "CapturePatch": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "CapturePatch",
+    "description": "Edit one capture (PATCH /v1/captures/{id}) — CAP-R2. Absent field ⇒ leave unchanged.",
+    "type": "object",
+    "properties": {
+      "body": {
+        "default": null,
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "lat": {
+        "default": null,
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "double"
+      },
+      "lng": {
+        "default": null,
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "double"
+      },
+      "loc_accuracy_m": {
+        "default": null,
+        "type": [
+          "number",
+          "null"
+        ],
+        "format": "float"
+      }
+    },
+    "additionalProperties": false
+  },
+  "CaptureResult": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "CaptureResult",
+    "type": "object",
+    "required": [
+      "idea_id",
+      "ingest_job_id"
+    ],
+    "properties": {
+      "idea_id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "ingest_job_id": {
+        "type": "string",
+        "format": "uuid"
+      }
+    }
+  },
+  "ConversationMessage": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "ConversationMessage",
+    "description": "REC-R6/REC-D7 — one persisted turn in `GET /v1/conversations/{thread}/messages`. `role` is `\"user\"|\"assistant\"` (no tool/system turns are persisted); `content` is the redacted final text.",
+    "type": "object",
+    "required": [
+      "content",
+      "role"
+    ],
+    "properties": {
+      "content": {
+        "type": "string"
+      },
+      "role": {
+        "type": "string"
+      }
+    }
+  },
+  "ConversationSummary": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "ConversationSummary",
+    "description": "REC-R6/REC-D7 — one row in `GET /v1/conversations` (the recall history drawer). Serde-only.",
+    "type": "object",
+    "required": [
+      "id",
+      "title",
+      "updated_at"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "last_snippet": {
+        "default": null,
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "title": {
+        "type": "string"
+      },
+      "updated_at": {
+        "description": "RFC3339 UTC; the client formats it locally (the wire never carries a local clock).",
+        "type": "string"
+      }
+    }
+  },
+  "IngestRunResult": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "IngestRunResult",
+    "description": "DIG-R5 — the result of `POST /v1/ingest/run` (the one-click incremental digest): how many per-idea ingest jobs were enqueued, and their ids (so the client can poll `GET /v1/jobs/{id}` for progress). Repeated clicks collapse onto existing pending jobs (debounce), so `enqueued` counts distinct dirty ideas, not new rows.",
+    "type": "object",
+    "required": [
+      "enqueued",
+      "job_ids"
+    ],
+    "properties": {
+      "enqueued": {
+        "type": "integer",
+        "format": "uint32",
+        "minimum": 0.0
+      },
+      "job_ids": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    }
+  },
+  "InitializeParams": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "InitializeParams",
+    "type": "object",
+    "properties": {
+      "opt_out_notification_methods": {
+        "default": [],
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "schema_version": {
+        "default": 0,
+        "type": "integer",
+        "format": "uint16",
+        "minimum": 0.0
+      }
+    },
+    "additionalProperties": false
+  },
+  "Item": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Item",
+    "oneOf": [
+      {
+        "type": "object",
+        "required": [
+          "body",
+          "idea_id",
+          "type"
+        ],
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "idea_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ideaCaptured"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "idea_id",
+          "provider",
+          "text",
+          "type"
+        ],
+        "properties": {
+          "idea_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "voiceTranscript"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "op",
+          "page_id",
+          "slug",
+          "type"
+        ],
+        "properties": {
+          "op": {
+            "$ref": "#/definitions/WikiEditOp"
+          },
+          "page_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "wikiEdit"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "answer_delta",
+          "citations",
+          "type"
+        ],
+        "properties": {
+          "answer_delta": {
+            "type": "string"
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Citation"
+            }
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "recallResult"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "delta",
+          "type"
+        ],
+        "properties": {
+          "delta": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "agentMessage"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "pages_touched",
+          "phase",
+          "type"
+        ],
+        "properties": {
+          "pages_touched": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "phase": {
+            "$ref": "#/definitions/DreamPhase"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "dreamTurn"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "delta",
+          "type"
+        ],
+        "properties": {
+          "delta": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "reasoning"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "type"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "error"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    ],
+    "definitions": {
+      "Citation": {
+        "type": "object",
+        "required": [
+          "end_line",
+          "rel_path",
+          "start_line"
+        ],
+        "properties": {
+          "end_line": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0.0
+          },
+          "rel_path": {
+            "type": "string"
+          },
+          "start_line": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0.0
+          }
+        },
+        "additionalProperties": false
+      },
+      "DreamPhase": {
+        "type": "string",
+        "enum": [
+          "Orient",
+          "Gather",
+          "Consolidate",
+          "Prune"
+        ]
+      },
+      "WikiEditOp": {
+        "description": "CANONICAL (serde tag=\"type\"). `Merge` carries the target slug; S3/app-server-protocol IMPORTS this. `schemars::JsonSchema` is derived here (additive, non-breaking) so the canonical type can be embedded in `app-server-protocol::Item` (which codegens its JSON-Schema for Dart — Master §8).",
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Create"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Update"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "into_slug",
+              "type"
+            ],
+            "properties": {
+              "into_slug": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Merge"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Delete"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "ThreadStartParams": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "ThreadStartParams",
+    "type": "object",
+    "required": [
+      "kind"
+    ],
+    "properties": {
+      "kind": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false
+  },
+  "TurnResult": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "TurnResult",
+    "type": "object",
+    "required": [
+      "items",
+      "turn_id"
+    ],
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Item"
+        }
+      },
+      "turn_id": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "definitions": {
+      "Citation": {
+        "type": "object",
+        "required": [
+          "end_line",
+          "rel_path",
+          "start_line"
+        ],
+        "properties": {
+          "end_line": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0.0
+          },
+          "rel_path": {
+            "type": "string"
+          },
+          "start_line": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0.0
+          }
+        },
+        "additionalProperties": false
+      },
+      "DreamPhase": {
+        "type": "string",
+        "enum": [
+          "Orient",
+          "Gather",
+          "Consolidate",
+          "Prune"
+        ]
+      },
+      "Item": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "body",
+              "idea_id",
+              "type"
+            ],
+            "properties": {
+              "body": {
+                "type": "string"
+              },
+              "idea_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ideaCaptured"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "idea_id",
+              "provider",
+              "text",
+              "type"
+            ],
+            "properties": {
+              "idea_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "voiceTranscript"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "op",
+              "page_id",
+              "slug",
+              "type"
+            ],
+            "properties": {
+              "op": {
+                "$ref": "#/definitions/WikiEditOp"
+              },
+              "page_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "wikiEdit"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "answer_delta",
+              "citations",
+              "type"
+            ],
+            "properties": {
+              "answer_delta": {
+                "type": "string"
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Citation"
+                }
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "recallResult"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "delta",
+              "type"
+            ],
+            "properties": {
+              "delta": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "agentMessage"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "pages_touched",
+              "phase",
+              "type"
+            ],
+            "properties": {
+              "pages_touched": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "phase": {
+                "$ref": "#/definitions/DreamPhase"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "dreamTurn"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "delta",
+              "type"
+            ],
+            "properties": {
+              "delta": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "reasoning"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "code",
+              "message",
+              "type"
+            ],
+            "properties": {
+              "code": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "message": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "error"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "WikiEditOp": {
+        "description": "CANONICAL (serde tag=\"type\"). `Merge` carries the target slug; S3/app-server-protocol IMPORTS this. `schemars::JsonSchema` is derived here (additive, non-breaking) so the canonical type can be embedded in `app-server-protocol::Item` (which codegens its JSON-Schema for Dart — Master §8).",
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Create"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Update"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "into_slug",
+              "type"
+            ],
+            "properties": {
+              "into_slug": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Merge"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Delete"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "TurnStartParams": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "TurnStartParams",
+    "type": "object",
+    "required": [
+      "input",
+      "thread_id"
+    ],
+    "properties": {
+      "input": {
+        "type": "string"
+      },
+      "thread_id": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "additionalProperties": false
+  }
+}

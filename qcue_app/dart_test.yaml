@@ -1,0 +1,21 @@
+# QCue Flutter test config.
+#
+# MEMORY-SAFETY GUARDRAIL (per-test timeout):
+# A widget test that calls `pumpAndSettle()` on a PERPETUAL animation — a blinking
+# text cursor (an autofocused TextField), an infinite CircularProgressIndicator,
+# or a looping shimmer — never settles, so pumpAndSettle loops allocating a new
+# frame each iteration for up to its 10-minute internal limit. That balloons the
+# `flutter_tester` VM to ~16 GB; if the run is then interrupted (Ctrl-C / kill),
+# the flutter_tester child is ORPHANED and keeps allocating, exhausting RAM and
+# freezing the machine.
+#
+# A tight wall-clock timeout makes such a test FAIL FAST (in seconds) instead of
+# ballooning — every real widget test in this suite runs in well under a second.
+# If a single test legitimately needs longer, annotate just it:
+#   @Timeout(Duration(seconds: 120))
+#   void main() { ... }
+#
+# In tests, prefer explicit `await tester.pump()` / `pump(Duration(...))` over
+# `pumpAndSettle()` whenever a focused TextField or any indeterminate progress
+# indicator is on screen.
+timeout: 60s

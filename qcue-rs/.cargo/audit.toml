@@ -1,0 +1,21 @@
+# cargo-audit configuration for the QCue Rust workspace.
+#
+# Run: `cargo audit` (install once: `cargo install cargo-audit --locked`).
+#
+# The ignore list below documents advisories that are present in Cargo.lock but are
+# provably NOT compiled into any QCue binary, with the verification command that proves
+# it. Each entry MUST stay justified — re-check with the cited `cargo tree` command if a
+# dependency changes, and remove the ignore the moment the crate enters the real build graph.
+
+[advisories]
+ignore = [
+    # RUSTSEC-2023-0071 — "Marvin Attack" RSA timing side-channel in the `rsa` crate (no
+    # fixed upstream release exists as of 2026-06). `rsa` is pulled ONLY by `sqlx-mysql`,
+    # which QCue never compiles: we enable sqlx with the `postgres` driver only (see
+    # qcue-rs/Cargo.toml). The crate is a phantom Cargo.lock entry, not in the build graph.
+    # Verified (returns empty on every target — i.e. not built):
+    #     cargo tree -i rsa --target all
+    #     cargo tree -i sqlx-mysql --target all
+    # QCue performs no RSA private-key operations, so the timing side-channel is unreachable.
+    "RUSTSEC-2023-0071",
+]

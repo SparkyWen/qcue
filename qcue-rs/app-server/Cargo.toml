@@ -1,0 +1,51 @@
+[package]
+name = "app-server"
+edition.workspace = true
+rust-version.workspace = true
+version = "0.1.0"
+
+[dependencies]
+app-server-protocol = { path = "../app-server-protocol" }
+protocol = { path = "../protocol" }
+secrets = { path = "../secrets" }
+store = { path = "../store" }
+router = { path = "../router" }
+providers = { path = "../providers" }
+http = { path = "../http" }
+wiki = { path = "../wiki" }
+ideas = { path = "../ideas" }
+fence = { path = "../utils/fence" }
+tokio.workspace = true
+axum.workspace = true
+sqlx.workspace = true
+redis.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true
+async-trait.workspace = true
+futures-util.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+argon2.workspace = true
+jsonwebtoken.workspace = true
+tokio-util.workspace = true
+tokio-stream.workspace = true
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+reqwest.workspace = true
+base64.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+tower = { workspace = true, features = ["util"] }
+http-body-util = "0.1"
+tempfile = "3"
+tokio-tungstenite = "0.29"
+futures-util = { workspace = true }
+base64 = { workspace = true }
+
+[lints]
+workspace = true

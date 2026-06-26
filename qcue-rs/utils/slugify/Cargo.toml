@@ -1,0 +1,12 @@
+[package]
+name = "slugify"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+name = "slugify"
+path = "src/lib.rs"
+
+[lints]
+workspace = true

@@ -1,0 +1,15 @@
+[package]
+name = "linksan"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+name = "linksan"
+path = "src/lib.rs"
+
+[dependencies]
+regex = "1"
+
+[lints]
+workspace = true

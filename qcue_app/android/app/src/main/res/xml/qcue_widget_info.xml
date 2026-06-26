@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- QCue S5-R45/R46 — the quick-capture App Widget metadata. App-driven reload
+     (S5-R47); no network polling in the widget process. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="60dp"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/qcue_widget"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />

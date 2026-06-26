@@ -1,0 +1,12 @@
+[build]
+# resolver-2 workspace; nothing exotic at M0
+[net]
+git-fetch-with-cli = true
+
+# QCue S1 store: the `#[sqlx::test]` fixtures resolve the test database from DATABASE_URL at
+# runtime. Pin it (force=true) to the local dev Postgres so the DB-backed `store` tests run even
+# when a caller exports DATABASE_URL empty/derived (e.g. `DATABASE_URL=$QCUE_TEST_DB` evaluated in
+# the same `export` where QCUE_TEST_DB is not yet assigned). The Redis tests read QCUE_TEST_REDIS
+# directly and are unaffected.
+[env]
+DATABASE_URL = { value = "postgres://qcue:qcue_dev@localhost:5432/qcue", force = true }

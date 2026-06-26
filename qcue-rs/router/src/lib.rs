@@ -1,0 +1,21 @@
+//! QCue router — THE HARNESS. Owns all cross-cutting concerns.
+pub mod classify;
+pub mod compress;
+pub mod dispatch;
+pub mod dispatch_http;
+pub mod pool;
+pub mod prompt_cache;
+pub mod resolver;
+pub mod retry_loop;
+pub mod sanitize;
+pub mod scrub;
+pub mod stt;
+pub mod stt_openai;
+pub mod structured;
+pub mod stub;
+pub mod tools;
+pub mod transport;
+pub mod transport_anthropic;
+pub mod transport_chat;
+pub mod transport_responses;
+pub mod turn;

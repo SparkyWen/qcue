@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- QCue S5-R42 — the Share Extension shares the App Group container with the app
+     so a staged item survives the cross-process hand-off. MUST match
+     SharedContainer.appGroup + the Runner + the widget target. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.cn.qcue.shared</string>
+	</array>
+</dict>
+</plist>

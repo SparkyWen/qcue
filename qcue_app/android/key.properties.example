@@ -1,0 +1,24 @@
+# QCue — Google Play upload-key signing.
+#
+# COPY this file to `key.properties` (same directory) and fill in real values.
+# `key.properties` and the `.jks` keystore are BOTH gitignored — never commit them,
+# and back the keystore up somewhere safe: if you lose it you can never publish
+# another update to the same Play listing (the signing identity is permanent).
+#
+# ── One-time setup ───────────────────────────────────────────────────────────
+# 1) Create the upload keystore. From qcue_app/android/ :
+#
+#      keytool -genkey -v -keystore upload-keystore.jks -storetype JKS \
+#        -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+#
+#    (Windows: keytool ships with the JDK, e.g. E:\dev\jdk-17\bin\keytool.exe)
+#
+# 2) Copy this file to key.properties and set the four values below.
+# 3) Run  pwsh scripts/deploy-android.ps1  — it now builds a Play-signed AAB.
+# ─────────────────────────────────────────────────────────────────────────────
+
+storePassword=CHANGE_ME
+keyPassword=CHANGE_ME
+keyAlias=upload
+# Absolute path is safest. A relative path resolves from qcue_app/android/app/.
+storeFile=E:/Au_projects/qcue/qcue_app/android/upload-keystore.jks

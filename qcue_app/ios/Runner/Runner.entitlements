@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- QCue S5 — the main app entitlements. The App Group is shared with the Share
+     Extension + the WidgetKit widget so staged shares + the widget count cross the
+     process boundary (S5-R42/R46). MUST match SharedContainer.appGroup. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.cn.qcue.shared</string>
+	</array>
+	<!-- SIWA-R1: Sign in with Apple (App Store Guideline 4.8). The "Sign In with Apple"
+	     capability must ALSO be enabled on the App ID `cn.qcue.app` in the Apple Developer
+	     portal, or this entitlement won't provision a signed build. -->
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
+</dict>
+</plist>

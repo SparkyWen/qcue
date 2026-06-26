@@ -1,0 +1,157 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Network access. REQUIRED in the main manifest so the RELEASE build can
+         reach the backend — Flutter only injects INTERNET into the debug/profile
+         manifests (for the dev tooling), so a release APK without this line has no
+         network at all (login/capture-upload/sync silently fail). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Lets the connectivity probe distinguish "radio up" from "server reachable". -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!-- QCue S5-R18/R31: on-device STT records the mic for the OS recognizer.
+         The rationale shown to the user (in-app explainer) discloses that audio
+         MAY be sent to a cloud STT provider when on-device recognition is
+         escalated (D4), so consent is informed. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- QCue S5-R30 — runtime notification permission on Android 13+ (requested
+         just-in-time, not at launch). The three QCue notif kinds deep-link into
+         Activity (dream / review / conflict). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- QCue LOC-R4 — optional precise capture location (when-in-use only; OFF by default in app). -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- QCue AU-R21 — the in-app updater installs a downloaded APK via the OS package-installer
+         (ACTION_VIEW). The user still taps "Install" (and grants install-unknown-apps once); this
+         only declares that QCue MAY request installs. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+    <!-- StrongBox availability hint for the secure-element-backed key store. -->
+    <uses-feature android:name="android.hardware.strongbox_keystore" android:required="false"/>
+    <application
+        android:label="QCue"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:dataExtractionRules="@xml/qcue_backup_rules">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <!-- Specifies an Android theme to apply to this Activity as soon as
+                 the Android process has started. This theme is visible to the user
+                 while the Flutter UI initializes. After that, this theme continues
+                 to determine the Window background behind the Flutter UI. -->
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- QCue S5-R42 — share-sheet ingest: receive text/url shared from
+                 other apps (ACTION_SEND). Forwarded to SharePlugin → enqueued as
+                 a clip capture (origin='share'|'web'), offline-safe. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+                <!-- Match iOS's Share Extension which also accepts web URLs
+                     (NSExtensionActivationSupportsWebURLWithMaxCount). Some apps
+                     share a link as text/uri-list rather than text/plain; without
+                     this QCue would not appear as a share target for those. -->
+                <data android:mimeType="text/uri-list"/>
+            </intent-filter>
+            <!-- QCue S5-R45 — widget + notification deep links (qcue:// scheme):
+                 capture/compose, widget/quickCapture; the route is parsed in
+                 MainActivity and forwarded to the widget/notif event channels.
+                 LEGACY/TRANSITION: kept alongside the verified https App Links filter
+                 below until on-device verification passes (APP_LINKS.md step 5), then removed. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="qcue"/>
+            </intent-filter>
+            <!-- QCue SECURITY (App Links) — verified https deep links bound EXCLUSIVELY to this signed
+                 app via https://app.qcue.cn/.well-known/assetlinks.json (autoVerify). Path-scoped to the
+                 app's OWN deep-link namespaces (/applink/capture, /applink/widget) so it does NOT capture
+                 the website's normal pages, and crucially does NOT overlap the OAuth redirect
+                 (/applink/oauth2redirect) — that path is owned by flutter_appauth's
+                 RedirectUriReceiverActivity (declared below). Keeping the two filters non-overlapping
+                 avoids an ambiguous in-app activity chooser firing mid-sign-in. See android/APP_LINKS.md. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https" android:host="app.qcue.cn" android:pathPrefix="/applink/capture"/>
+                <data android:scheme="https" android:host="app.qcue.cn" android:pathPrefix="/applink/widget"/>
+            </intent-filter>
+        </activity>
+        <!-- QCue SECURITY (App Links / OAuth) — flutter_appauth (AppAuth) catches the OAuth/OIDC redirect
+             on this activity. The plugin's manifest registers it for the legacy custom scheme via the
+             ${appAuthRedirectScheme} placeholder (app/build.gradle.kts, kept as a transition fallback);
+             we ADDITIVELY declare it here (default manifest merge unions the intent-filters) with a
+             verified https App Links filter scoped to the EXACT OAuth redirect path
+             https://app.qcue.cn/applink/oauth2redirect — the new, non-hijackable redirect
+             (qcue_oidc.dart). autoVerify binds it to this signed app via assetlinks.json. -->
+        <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:exported="true">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https" android:host="app.qcue.cn" android:path="/applink/oauth2redirect"/>
+            </intent-filter>
+        </activity>
+        <!-- QCue S5-R45/R46 — the home-screen quick-capture App Widget. -->
+        <receiver
+            android:name=".QuickCaptureWidget"
+            android:exported="true">
+            <!-- Only the system-delivered APPWIDGET_UPDATE is in the exported filter. The custom
+                 cn.qcue.WIDGET_QUICK_CAPTURE action was REMOVED here so another installed app can no
+                 longer broadcast it to force-launch QCue / inject a capture: the app's own quick-capture
+                 PendingIntent targets this receiver by explicit component (QuickCaptureWidget.kt), which
+                 does NOT require the action to appear in any exported intent-filter. -->
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/qcue_widget_info"/>
+        </receiver>
+        <!-- QCue AU-R21 — exposes the downloaded APK (app cache dir) to the OS installer via a
+             content:// URI (a file:// URI is rejected on API 24+). Authority matches the Kotlin
+             InstallerPlugin (`${applicationId}.fileprovider`). -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+        <!-- Don't delete the meta-data below.
+             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+    <!-- Required to query activities that can process text, see:
+         https://developer.android.com/training/package-visibility and
+         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+
+         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
+</manifest>

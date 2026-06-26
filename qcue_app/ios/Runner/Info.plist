@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<!-- NG-R12 native Google sign-in (GoogleSignIn SDK). iOS reads this client id automatically. -->
+	<key>GIDClientID</key>
+	<string>467938090856-qse9a2emhkf65lmpvlhmv6loartn283t.apps.googleusercontent.com</string>
+	<!-- QCue S5-R31: content-honest usage strings. The speech string discloses
+	     that audio may be sent to a cloud STT provider when on-device recognition
+	     is escalated (D4), so consent is informed. -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>QCue uses the microphone to capture voice notes you dictate.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>QCue transcribes your voice notes on-device. If on-device recognition is unavailable or you ask for higher accuracy, the audio may be sent to a cloud speech provider.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>QCue tags your captures with where you made them. This is off by default and used only when you turn on "Tag captures with location" in Settings.</string>
+	<!-- ITMS-90683: the geolocator plugin references iOS's "Always" location API, so Apple's
+	     static scan requires this purpose string even though QCue only ever requests
+	     when-in-use. Same honest wording — there is no background/always location use. -->
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>QCue tags your captures with where you made them. This is off by default and used only when you turn on "Tag captures with location" in Settings.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>QCue uses Face ID to unlock your encrypted provider keys stored on this device.</string>
+	<!-- QCue S5-R45 — the `qcue://` deep-link scheme the widget + notification taps
+	     use to re-enter the app (capture/compose, widget/quickCapture). -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>cn.qcue.deeplink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>qcue</string>
+			</array>
+		</dict>
+		<!-- NG-R12 native Google sign-in: the reversed iOS OAuth client ID (GoogleSignIn callback). -->
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>cn.qcue.googlesignin</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.467938090856-qse9a2emhkf65lmpvlhmv6loartn283t</string>
+			</array>
+		</dict>
+	</array>
+	<!-- QCue S5-R37 — the BGTaskScheduler identifier for the background flush of the
+	     offline outbound capture queue. Registered in AppDelegate before launch
+	     completes. Mirrors Android's FlushWorker.UNIQUE_WORK ("qcue.flush.periodic"). -->
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>qcue.flush.periodic</string>
+	</array>
+	<!-- Only `fetch` + `processing` (BGTaskScheduler needs them). NO
+	     `remote-notification`: QCue uses local notifications only (no APNs /
+	     aps-environment entitlement), and listing it would fail App Store upload
+	     validation ITMS-90078 ("Missing Push Notification Entitlement"). -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+	</array>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>QCue</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>qcue_app</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<!-- Export compliance: QCue uses only exempt encryption — HTTPS/TLS for all
+	     network traffic and the OS Keychain / standard system AES for the local
+	     BYOK key vault. No proprietary or non-standard cryptography. Declaring
+	     this avoids the per-upload encryption prompt in App Store Connect and the
+	     need to file CCATS/year-end self-classification. (If a future build adds
+	     non-standard crypto, set this to true and complete the export docs.) -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneClassName</key>
+					<string>UIWindowScene</string>
+					<key>UISceneConfigurationName</key>
+					<string>flutter</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+					<key>UISceneStoryboardFile</key>
+					<string>Main</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+</dict>
+</plist>

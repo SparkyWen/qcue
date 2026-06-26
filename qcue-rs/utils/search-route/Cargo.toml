@@ -1,0 +1,12 @@
+[package]
+name = "search-route"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+name = "search_route"
+path = "src/lib.rs"
+
+[lints]
+workspace = true

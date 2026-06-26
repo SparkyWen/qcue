@@ -1,0 +1,37 @@
+[package]
+name = "wiki"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+name = "wiki"
+path = "src/lib.rs"
+
+[dependencies]
+protocol = { path = "../protocol" }
+slugify = { path = "../utils/slugify" }
+frontmatter = { path = "../utils/frontmatter" }
+linksan = { path = "../utils/linksan" }
+fence = { path = "../utils/fence" }
+store = { path = "../store" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+sqlx.workspace = true
+tokio = { workspace = true, features = ["fs", "sync"] }
+tokio-util.workspace = true
+async-trait.workspace = true
+futures-util.workspace = true
+sha2 = "0.10"
+
+[dev-dependencies]
+tempfile = "3"
+walkdir = "2"
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "fs"] }
+
+[lints]
+workspace = true

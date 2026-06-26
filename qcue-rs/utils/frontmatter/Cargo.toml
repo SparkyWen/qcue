@@ -1,0 +1,16 @@
+[package]
+name = "frontmatter"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+name = "frontmatter"
+path = "src/lib.rs"
+
+[dependencies]
+serde.workspace = true
+serde_yaml = "0.9"
+
+[lints]
+workspace = true

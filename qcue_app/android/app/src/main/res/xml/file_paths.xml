@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- QCue AU-R21 — FileProvider roots for the in-app updater. path_provider's getTemporaryDirectory()
+     on Android is the app cache dir, where apk_installer.dart writes qcue-update-<build>.apk. -->
+<paths>
+    <cache-path name="apk_cache" path="."/>
+    <external-cache-path name="apk_external" path="."/>
+</paths>
