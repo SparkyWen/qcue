@@ -130,6 +130,21 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: qcue-rs
+      # The official postgres image creates POSTGRES_USER as a SUPERUSER, and Postgres
+      # superusers BYPASS Row-Level Security (even FORCE RLS) — which would silently break
+      # the multi-tenant isolation tests. Demote `qcue` to a normal role (matching the dev
+      # setup in CLAUDE.md: a non-superuser with CREATEDB) so RLS is genuinely enforced.
+      # CREATEDB is required because #[sqlx::test] creates an ephemeral DB per test.
+      - name: Enforce RLS (demote qcue from the image's default superuser)
+        working-directory: ${{ github.workspace }}
+        env:
+          PGPASSWORD: qcue_dev
+        run: |
+          command -v psql >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client; }
+          psql -h localhost -U qcue -d qcue -v ON_ERROR_STOP=1 \
+            -c "ALTER ROLE qcue NOSUPERUSER CREATEDB NOBYPASSRLS;"
+          psql -h localhost -U qcue -d qcue -tAc \
+            "SELECT 'qcue role -> super='||rolsuper||' createdb='||rolcreatedb||' bypassrls='||rolbypassrls FROM pg_roles WHERE rolname='qcue';"
       - name: cargo test (315+ tests; #[sqlx::test] spins an ephemeral DB per test)
         run: cargo test --locked --workspace
 
