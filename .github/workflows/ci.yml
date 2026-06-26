@@ -105,14 +105,16 @@ jobs:
     services:
       postgres:
         image: postgres:16
+        # Bootstrap as the default `postgres` superuser. We then create a SEPARATE,
+        # non-superuser `qcue` role in a setup step (mirroring CLAUDE.md's dev setup), because
+        # Row-Level Security is bypassed by superusers — and if `qcue` were the bootstrap user
+        # it could not be demoted ("the bootstrap user must have the SUPERUSER attribute").
         env:
-          POSTGRES_USER: qcue
-          POSTGRES_PASSWORD: qcue_dev
-          POSTGRES_DB: qcue
+          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U qcue -d qcue"
+          --health-cmd "pg_isready -U postgres"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10
@@ -130,32 +132,21 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: qcue-rs
-      # RLS hardening. DATABASE_URL is force-pinned to the `qcue` role
-      # (qcue-rs/.cargo/config.toml), and in the postgres image that role bypasses
-      # Row-Level Security — which would make the multi-tenant isolation tests pass
-      # vacuously. `qcue` is NOT a superuser here (it can't ALTER itself over TCP), so we
-      # run the demotion through the postgres SERVICE CONTAINER's local socket (trust auth)
-      # as the bootstrap superuser. Trying `-U postgres` then `-U qcue` makes this robust to
-      # whichever role is the actual superuser; the printed role table documents the truth.
-      # CREATEDB is kept because #[sqlx::test] creates an ephemeral DB per test. Non-fatal —
-      # `cargo test` is the real gate.
-      - name: Ensure RLS is enforced for the qcue role
+      # Create the non-superuser `qcue` role + its database, matching the dev setup in
+      # CLAUDE.md (`CREATE ROLE qcue LOGIN PASSWORD 'qcue_dev' CREATEDB`). This is what makes
+      # Row-Level Security genuinely enforced (a superuser bypasses RLS). DATABASE_URL is
+      # force-pinned to this role (qcue-rs/.cargo/config.toml); CREATEDB is required because
+      # #[sqlx::test] creates an ephemeral DB per test (owned by qcue, so FORCE RLS applies).
+      - name: Create the non-superuser qcue role + database (so RLS is enforced)
+        env:
+          PGPASSWORD: postgres
         run: |
-          set +e
-          CID=$(docker ps --filter "ancestor=postgres:16" --format '{{.ID}}' | head -1)
-          [ -z "$CID" ] && CID=$(docker ps --format '{{.ID}} {{.Image}}' | awk '/postgres/{print $1; exit}')
-          echo "postgres service container: ${CID:-<none>}"
-          su_psql() {
-            docker exec "$CID" psql -v ON_ERROR_STOP=1 -U postgres -d qcue "$@" \
-              || docker exec "$CID" psql -v ON_ERROR_STOP=1 -U qcue -d qcue "$@"
-          }
-          echo "::group::role topology (before)"
-          su_psql -c "SELECT rolname, rolsuper, rolcreatedb, rolbypassrls FROM pg_roles ORDER BY rolsuper DESC, rolname;"
-          echo "::endgroup::"
-          su_psql -c "ALTER ROLE qcue NOSUPERUSER NOBYPASSRLS CREATEDB;"
-          echo "qcue role after:"
-          su_psql -c "SELECT rolname, rolsuper, rolcreatedb, rolbypassrls FROM pg_roles WHERE rolname='qcue';"
-          true
+          command -v psql >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client; }
+          psql -h localhost -U postgres -d postgres -v ON_ERROR_STOP=1 \
+            -c "CREATE ROLE qcue LOGIN PASSWORD 'qcue_dev' NOSUPERUSER NOBYPASSRLS CREATEDB;" \
+            -c "CREATE DATABASE qcue OWNER qcue;"
+          psql -h localhost -U postgres -d postgres -tAc \
+            "SELECT 'qcue -> super='||rolsuper||' createdb='||rolcreatedb||' bypassrls='||rolbypassrls FROM pg_roles WHERE rolname='qcue';"
       - name: cargo test (315+ tests; #[sqlx::test] spins an ephemeral DB per test)
         run: cargo test --locked --workspace
 
