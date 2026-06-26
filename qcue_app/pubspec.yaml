@@ -6,7 +6,7 @@ publish_to: none
 # (`git rev-list --count HEAD`) and pass it via --build-number, so iOS and Android always share ONE
 # number for one commit (no divergence, no per-machine auto-bump). Bump the marketing version (1.0.x)
 # here only when you want a new user-facing version; leave the "+1" suffix as-is.
-version: 1.0.5+1
+version: 1.1.0+110
 
 environment:
   sdk: ^3.12.2
