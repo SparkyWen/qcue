@@ -41,6 +41,7 @@ QCue 是一个开源的知识、记忆与语义召回系统。把转瞬即逝的
 - [🗺️ 路线图](#-路线图)
 - [🔐 关于本仓库的提交历史](#-关于本仓库的提交历史)
 - [🤝 参与贡献](#-参与贡献)
+- [💬 社区交流群](#-社区交流群)
 - [🛡️ 安全](#-安全)
 - [📄 许可证](#-许可证)
 - [™️ 商标](#-商标)
@@ -254,6 +255,25 @@ cargo clippy --all-targets -- -D warnings
 欢迎贡献！🎉 请先阅读 [`CONTRIBUTING.md`](CONTRIBUTING.md) 与 [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)。
 对于较大的改动，请先开 issue 讨论再动手。一个很好的起点是用 **stub 模式**（见上）运行 App，端到端
 地看清整个产品。
+
+---
+
+<a id="-社区交流群"></a>
+
+## 💬 社区交流群
+
+有反馈、问题，或者想一起共建 QCue？欢迎扫码加入我们的微信用户群 —— 我们非常期待听到你如何使用
+QCue，也热忱欢迎广大开发者一起把它做得更好。
+
+<div align="center">
+  <img src="docs/assets/qcue-wechat-group.png" alt="QCue 微信用户群二维码" width="240" />
+  <br/>
+  <em>扫码加入「<strong>QCue · 第二大脑</strong>」微信群。</em>
+</div>
+
+> [!NOTE]
+> 微信群二维码大约每 7 天更新一次。如果上方二维码已过期，请[提交 issue](https://github.com/SparkyWen/qcue/issues)
+> 或发邮件至 **helios@sinox.ai**，我们会拉你进群。
 
 ---
 
