@@ -1,0 +1,23 @@
+### Rust crates
+
+License summary (license — number of crates):
+
+{{#each overview}}
+- **{{{name}}}** — used by {{count}} crate(s)
+{{/each}}
+
+{{#each licenses}}
+<a name="{{id}}"></a>
+#### {{{name}}}
+
+Used by:
+
+{{#each used_by}}
+- {{{crate.name}}} {{{crate.version}}}{{#if crate.repository}} — {{{crate.repository}}}{{/if}}
+{{/each}}
+
+```
+{{{text}}}
+```
+
+{{/each}}

@@ -1,0 +1,35 @@
+# cargo-about config — generates the Rust portion of THIRD_PARTY_NOTICES.md.
+# Regenerate:  cargo about generate about.hbs -o ../scratch/rust-notices.md
+# Policy is also enforced in CI via deny.toml (`cargo deny check licenses`).
+
+# Dev-deps (test frameworks, etc.) are never distributed in a shipped binary.
+ignore-dev-dependencies = true
+ignore-build-dependencies = false
+ignore-transitive-dependencies = false
+
+# Built-in clarifications for crates whose license metadata is ambiguous
+# (e.g. ring ships a mix of ISC/MIT/OpenSSL texts that SPDX can't infer).
+workarounds = ["ring", "rustls"]
+
+# Permissive + weak-copyleft (MPL-2.0 file-level) licenses we accept for
+# redistribution. Anything NOT in this list surfaces as a warning at generate
+# time and is hard-denied by `cargo deny check licenses`.
+accepted = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "Unicode-3.0",
+    "CDLA-Permissive-2.0",
+    "BSL-1.0",
+    "0BSD",
+    "Unlicense",
+]
+
+# Our own 18 workspace crates carry no `license` field (first-party, never
+# published) — they are not third-party and must not appear in this notices file.
+[private]
+ignore = true

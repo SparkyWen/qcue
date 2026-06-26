@@ -1,5 +1,6 @@
 [package]
 name = "ideas"
+publish = false  # app-internal crate, never published
 edition.workspace = true
 rust-version.workspace = true
 version.workspace = true

@@ -1,5 +1,6 @@
 [package]
 name = "app-server"
+publish = false  # app-internal crate, never published
 edition.workspace = true
 rust-version.workspace = true
 version = "0.1.0"
