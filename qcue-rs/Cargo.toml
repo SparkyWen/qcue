@@ -16,7 +16,7 @@ serde_json = "1"
 thiserror = "2"
 uuid = { version = "1", features = ["v7", "v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
-ts-rs = { version = "10", features = ["uuid-impl", "serde-json-impl", "chrono-impl"] }
+ts-rs = { version = "12", features = ["uuid-impl", "serde-json-impl", "chrono-impl"] }
 schemars = { version = "0.8", features = ["uuid1", "chrono"] }
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync"] }
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream", "json", "http2", "multipart"] }
