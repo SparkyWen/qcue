@@ -1,0 +1,36 @@
+# actions/labeler@v5 config — maps changed paths to "area:" labels.
+# The labels themselves are defined in .github/labels.yml (synced by label-sync.yml).
+
+"area: backend (rust)":
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'qcue-rs/**'
+
+"area: app (flutter)":
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'qcue_app/**'
+
+"area: design-system":
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'design-system/**'
+
+"area: ci":
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+
+"area: docs":
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**'
+          - '**/*.md'
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'qcue-rs/Cargo.toml'
+          - 'qcue-rs/Cargo.lock'
+          - 'qcue_app/pubspec.yaml'
+          - 'qcue_app/pubspec.lock'

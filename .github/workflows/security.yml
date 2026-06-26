@@ -1,0 +1,46 @@
+# Supply-chain & secret hygiene.
+#
+#  * gitleaks      — runs on every PR/push. Defense-in-depth BEYOND the export whitelist:
+#                    a second line that fails closed if a secret is ever committed here.
+#  * cargo-audit   — weekly RustSec advisory scan (cargo-deny check advisories). Informational
+#                    and time-varying, so it runs on a schedule and is NOT a PR-blocking gate:
+#                    a freshly-published CVE never reds-out an unrelated contributor's PR.
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '23 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    name: Secret scan (gitleaks)
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          # Free for public repositories — no GITLEAKS_LICENSE required.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  advisories:
+    name: RustSec advisories (cargo-deny)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: cargo-deny — advisories (RustSec)
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          manifest-path: qcue-rs/Cargo.toml
+          command: check advisories

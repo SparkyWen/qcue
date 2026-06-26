@@ -1,0 +1,16 @@
+# Code ownership — auto-requests review and documents who maintains each area.
+# (Enforced only if branch protection enables "Require review from Code Owners".)
+
+# Default owner for everything.
+*                           @SparkyWen
+
+# Load-bearing seams — changes here warrant extra care.
+/qcue-rs/router/            @SparkyWen
+/qcue-rs/protocol/          @SparkyWen
+/qcue-rs/app-server/        @SparkyWen
+/qcue-rs/app-server-protocol/ @SparkyWen
+
+# CI, governance, and the public-export surface.
+/.github/                   @SparkyWen
+/SECURITY.md                @SparkyWen
+/LICENSE                    @SparkyWen

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 Report a security vulnerability
+    url: https://github.com/SparkyWen/qcue/security/advisories/new
+    about: Please report vulnerabilities privately via Security Advisories — see SECURITY.md. Do not open a public issue.
+  - name: 💬 Questions & discussion
+    url: https://github.com/SparkyWen/qcue/discussions
+    about: Ask questions, share ideas, and discuss usage with the community.

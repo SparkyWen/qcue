@@ -1,0 +1,21 @@
+# Auto-apply "area:" labels to PRs based on the files they touch (config: .github/labeler.yml).
+# Uses pull_request_target so it can label PRs from forks (it only reads the diff via the
+# API — it never checks out or runs PR code, so this is safe).
+name: Labeler
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    name: Apply area labels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/labeler@v5
+        with:
+          sync-labels: true

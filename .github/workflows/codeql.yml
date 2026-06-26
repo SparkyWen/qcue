@@ -1,0 +1,41 @@
+# CodeQL security analysis for GitHub Actions workflows — catches workflow-injection and
+# other CI misconfigurations in a repo where PRs can edit the pipeline itself.
+#
+# Rust/Dart are intentionally not scanned here: clippy (-D warnings) + cargo-deny cover the
+# Rust side, and adding language scanners with weak coverage would only create false confidence.
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/**'
+  schedule:
+    # Weekly, Mondays 06:17 UTC (off-peak minute to avoid the top-of-hour rush).
+    - cron: '17 6 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze (actions)
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: actions
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:actions'
