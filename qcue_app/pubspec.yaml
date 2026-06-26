@@ -59,7 +59,7 @@ dependencies:
   gpt_markdown: ^1.1.7
   # QCue LOC-R4: optional action-time GPS fix attached to captures (off by default).
   # Pinned exact to match the repo's reproducible-build convention.
-  geolocator: 13.0.1
+  geolocator: 14.0.2
   # "Sign in with Google" via our self-hosted OIDC provider (auth.qcue.cn). Drives the
   # Authorization-Code + PKCE flow as a public client and returns the auth.qcue.cn
   # access_token, which core/auth/qcue_oidc.dart exchanges at POST /v1/auth/oidc for a
