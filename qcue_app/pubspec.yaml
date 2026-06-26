@@ -19,7 +19,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: 1.0.9
-  flutter_riverpod: 2.6.1
+  flutter_riverpod: 3.3.2
   go_router: 14.8.1
   google_fonts: 6.3.3
   collection: 1.19.1
