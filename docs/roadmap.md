@@ -18,7 +18,7 @@ commercial details. Items are directional, not commitments, and may change.
 - Broaden and document provider coverage in the harness.
 - Strengthen the public test and CI story so contributions are easy to validate.
 - Complete and publish the third-party dependency-license audit
-  (see [`../THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md)).
+  (see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)).
 
 ## Later
 

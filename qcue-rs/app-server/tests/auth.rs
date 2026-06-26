@@ -433,7 +433,7 @@ fn mint_test_google_token(aud: &str, iss: &str, email_verified: bool, exp_offset
     let now = chrono::Utc::now().timestamp();
     let claims = serde_json::json!({
         "sub": "google-subject-123",
-        "email": "wenxuner@gmail.com",
+        "email": "helios@sinox.ai",
         "email_verified": email_verified,
         "iss": iss,
         "aud": aud,
@@ -453,7 +453,7 @@ fn mint_test_apple_token(aud: &str, email_verified: serde_json::Value, exp_offse
     let now = chrono::Utc::now().timestamp();
     let claims = serde_json::json!({
         "sub": "apple-subject-abc",
-        "email": "wenxuner@privaterelay.appleid.com",
+        "email": "helios@privaterelay.appleid.com",
         "email_verified": email_verified,
         "iss": "https://appleid.apple.com",
         "aud": aud,
@@ -481,7 +481,7 @@ async fn test_social_verify_accepts_valid_google_token() {
     let tok = mint_test_google_token("test-aud", "https://accounts.google.com", true, 3600);
     let claims = verify_id_token("google", &tok, &cfg, &test_jwks()).await.unwrap();
     assert_eq!(claims.sub, "google-subject-123");
-    assert_eq!(claims.email.as_deref(), Some("wenxuner@gmail.com"));
+    assert_eq!(claims.email.as_deref(), Some("helios@sinox.ai"));
 }
 
 #[tokio::test]
@@ -525,7 +525,7 @@ async fn test_social_verify_accepts_valid_apple_token() {
     let tok = mint_test_apple_token("cn.qcue.app", serde_json::json!(true), 3600);
     let claims = verify_id_token("apple", &tok, &cfg, &test_jwks()).await.unwrap();
     assert_eq!(claims.sub, "apple-subject-abc");
-    assert_eq!(claims.email.as_deref(), Some("wenxuner@privaterelay.appleid.com"));
+    assert_eq!(claims.email.as_deref(), Some("helios@privaterelay.appleid.com"));
 }
 
 // Apple sometimes encodes email_verified as the STRING "true" — must still deserialize + verify.
@@ -615,7 +615,7 @@ async fn test_social_google_creates_user_and_session(pool: PgPool) {
     assert!(v["refresh_jwt"].as_str().is_some_and(|s| !s.is_empty()));
 
     // a users row + an oauth_identities row now exist for this Google identity.
-    let users: i64 = sqlx::query_scalar("SELECT count(*) FROM users WHERE email='wenxuner@gmail.com'")
+    let users: i64 = sqlx::query_scalar("SELECT count(*) FROM users WHERE email='helios@sinox.ai'")
         .fetch_one(&db.migrator).await.unwrap();
     assert_eq!(users, 1);
     let oid: i64 = sqlx::query_scalar(
@@ -648,7 +648,7 @@ async fn test_social_google_returning_subject_is_idempotent(pool: PgPool) {
         ).await.unwrap();
         assert_eq!(res.status(), StatusCode::OK);
     }
-    let users: i64 = sqlx::query_scalar("SELECT count(*) FROM users WHERE email='wenxuner@gmail.com'")
+    let users: i64 = sqlx::query_scalar("SELECT count(*) FROM users WHERE email='helios@sinox.ai'")
         .fetch_one(&db.migrator).await.unwrap();
     assert_eq!(users, 1, "the same Google subject must not create a second user");
 }
