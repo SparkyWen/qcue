@@ -138,10 +138,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_appauth
-      sha256: d8be972036909e99c022bbb8edcad126dbd2cbaceaa2eb85e35791b599f3e9cf
+      sha256: aafcafdc7de1c412f361798c993de5737a3eddc6bf26fe38a71ad580b37b4ec0
       url: "https://pub.dev"
     source: hosted
-    version: "12.0.1"
+    version: "12.0.2"
   flutter_appauth_platform_interface:
     dependency: transitive
     description:
@@ -747,10 +747,10 @@ packages:
     dependency: "direct main"
     description:
       name: shorebird_code_push
-      sha256: cc78bbf651d320414e6ce66d6f3e825f91050050bf94bbe27f7eb3eebfdfde1c
+      sha256: "55d5eea098a4293199d22dfd263ce1d6c10820ceb42c2acb950f971a8bcee0ce"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.4"
+    version: "2.0.6"
   sign_in_with_apple:
     dependency: "direct main"
     description:
@@ -800,10 +800,10 @@ packages:
     dependency: "direct main"
     description:
       name: sqlite3_flutter_libs
-      sha256: "1e800ebe7f85a80a66adacaa6febe4d5f4d8b75f244e9838a27cb2ffc7aec08d"
+      sha256: "3ed7553eee7bb368f8950f58ba29f634e06e813c029aff6a0d60862b96de8454"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.41"
+    version: "0.6.0+eol"
   stack_trace:
     dependency: transitive
     description:
@@ -880,10 +880,10 @@ packages:
     dependency: "direct main"
     description:
       name: url_launcher
-      sha256: "9d06212b1362abc2f0f0d78e6f09f726608c74e3b9462e8368bb03314aa8d603"
+      sha256: f6a7e5c4835bb4e3026a04793a4199ca2d14c739ec378fdfe23fc8075d0439f8
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.1"
+    version: "6.3.2"
   url_launcher_android:
     dependency: transitive
     description:

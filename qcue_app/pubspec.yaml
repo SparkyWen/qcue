@@ -50,7 +50,7 @@ dependencies:
   # NOTE: the proper sqlite3 2.x→3.x migration (drop this pkg; rewrite the loader in
   # sqlite_cache_store.dart per simolus3/sqlite3.dart UPGRADING_TO_V3.md) is its own PR.
   sqlite3: 2.4.6
-  sqlite3_flutter_libs: 0.5.41
+  sqlite3_flutter_libs: 0.6.0+eol
   path_provider: 2.1.6
   # QCue D4 cloud voice STT: record an audio clip (m4a/AAC, 44.1 kHz mono) for upload
   # to /v1/transcribe (OpenAI gpt-4o-transcribe). Behind the AudioRecorderFacade seam
@@ -69,7 +69,7 @@ dependencies:
   # google_sign_in 7.x below) also requires — 8.x pinned AppAuth 1.7.6 and could not coexist.
   # SECURITY: pinned EXACT (was ^12.0.0). The auth/token-acquisition path is security-critical;
   # an unguarded `pub upgrade` must not silently pull a new minor here. Bump deliberately.
-  flutter_appauth: 12.0.1
+  flutter_appauth: 12.0.2
   # NG-R12 "Sign in with Google" — NATIVE account picker. On Android this uses the OS Credential
   # Manager (the bottom-sheet account chooser, like ChatGPT/Claude); on iOS the GoogleSignIn SDK.
   # Returns a Google ID token verified by the backend at POST /v1/auth/social.
@@ -81,11 +81,11 @@ dependencies:
   # SECURITY: pinned EXACT (was ^6.1.4) — same rationale as flutter_appauth above.
   sign_in_with_apple: 6.1.4
   # AU-R1/R14 — Shorebird code-push status surface (read-only; the engine does the OTA). Pinned exact.
-  shorebird_code_push: 2.0.4
+  shorebird_code_push: 2.0.6
   # AU-R16 — read the running build number to compare against the release manifest. Pinned exact.
   package_info_plus: 8.3.0
   # AU-R21 — open the App Store (iOS full-update CTA). Pinned exact.
-  url_launcher: 6.3.1
+  url_launcher: 6.3.2
   # AU-R21 SECURITY — SHA-256 the downloaded APK before handing it to the OS installer
   # (defense in depth atop TLS + the installer's same-signer check). Pinned exact.
   crypto: 3.0.7
