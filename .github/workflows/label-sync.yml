@@ -1,0 +1,28 @@
+# Labels-as-code: keep the repository's label set in sync with .github/labels.yml so the
+# taxonomy is reviewable in version control and can't drift into ad-hoc chaos.
+# Runs when labels.yml changes on main, and on demand.
+name: Label Sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/labels.yml'
+      - '.github/workflows/label-sync.yml'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  sync:
+    name: Sync repository labels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: crazy-max/ghaction-github-labeler@v5
+        with:
+          yaml-file: .github/labels.yml
+          # Keep it non-destructive: never delete labels that aren't in the file
+          # (so manually-created labels survive). Flip to true for strict mode.
+          skip-delete: true

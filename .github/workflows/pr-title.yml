@@ -1,0 +1,41 @@
+# Validate that PR titles follow Conventional Commits, so the squash-merge history
+# (PR title becomes the squash commit subject) stays clean and machine-readable.
+name: PR Title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+    branches: [main]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  conventional-title:
+    name: Conventional PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Allowed <type>s — matches the project's existing commit history.
+          types: |
+            feat
+            fix
+            docs
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            release
+            revert
+          # Scope is optional and free-form (e.g. fix(router): ...).
+          requireScope: false
+          # Subject must not start with an upper-case letter.
+          subjectPattern: ^(?![A-Z]).+$
+          subjectPatternError: |
+            The PR title subject "{subject}" should start with a lower-case letter,
+            e.g. "feat: add recall prefetch" not "feat: Add recall prefetch".

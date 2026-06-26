@@ -1,0 +1,63 @@
+name: 🐛 Bug report
+description: Report a reproducible problem in QCue.
+labels: ["bug", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug! Please **do not include any secrets**
+        (API keys, tokens, credentials) in logs, screenshots, or descriptions.
+        For security vulnerabilities, use [Security Advisories](https://github.com/SparkyWen/qcue/security/advisories/new) instead — see `SECURITY.md`.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Minimal, deterministic steps. Note whether you used stub mode (`QCUE_STUB=true`) or a live backend.
+      placeholder: |
+        1. ...
+        2. ...
+        3. See error
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - "Backend (qcue-rs)"
+        - "App (qcue_app / Flutter)"
+        - "Design system"
+        - "Docs"
+        - "Not sure"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      description: App version, or the qcue-rs commit SHA if building from source.
+    validations:
+      required: false
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, device, Rust/Flutter versions as relevant.
+      placeholder: "Android 14 · Flutter stable · Rust 1.96"
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Redact anything sensitive. This will be rendered as code.
+      render: shell
+    validations:
+      required: false

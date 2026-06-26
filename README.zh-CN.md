@@ -4,6 +4,7 @@
 
 **一个「捕捉优先」的第二大脑：把转瞬即逝的想法，变成一座不断生长、互相链接的知识 wiki —— 由 _你自己的_ 大模型密钥驱动。**
 
+[![CI](https://github.com/SparkyWen/qcue/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/SparkyWen/qcue/actions/workflows/ci.yml)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%203.0-2596be.svg?logo=gnu&logoColor=white)](LICENSE)
 [![Rust](https://img.shields.io/badge/Rust-edition%202024-CE412B?logo=rust&logoColor=white)](qcue-rs)
 [![Flutter](https://img.shields.io/badge/Flutter-Android%20%2B%20iOS-02569B?logo=flutter&logoColor=white)](qcue_app)

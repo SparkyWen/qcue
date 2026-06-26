@@ -1,0 +1,29 @@
+# GitHub's native auto-generated release notes configuration.
+# Groups merged PRs by label when you click "Generate release notes" on a release.
+changelog:
+  exclude:
+    labels:
+      - duplicate
+      - wontfix
+    authors:
+      - dependabot
+  categories:
+    - title: "🚀 Features"
+      labels:
+        - enhancement
+    - title: "🐛 Bug Fixes"
+      labels:
+        - bug
+    - title: "📝 Documentation"
+      labels:
+        - documentation
+        - "area: docs"
+    - title: "🔒 Security"
+      labels:
+        - security
+    - title: "📦 Dependencies"
+      labels:
+        - dependencies
+    - title: "Other Changes"
+      labels:
+        - "*"
