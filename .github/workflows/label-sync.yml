@@ -19,8 +19,8 @@ jobs:
     name: Sync repository labels
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: crazy-max/ghaction-github-labeler@v5
+      - uses: actions/checkout@v7
+      - uses: crazy-max/ghaction-github-labeler@v6
         with:
           yaml-file: .github/labels.yml
           # Keep it non-destructive: never delete labels that aren't in the file

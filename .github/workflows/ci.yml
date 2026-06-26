@@ -41,8 +41,8 @@ jobs:
       rust: ${{ steps.filter.outputs.rust }}
       flutter: ${{ steps.filter.outputs.flutter }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -65,7 +65,7 @@ jobs:
     # hand-formatted style and is not `cargo fmt`-clean; the project's gates are clippy + xtask
     # (see CLAUDE.md). Adopting rustfmt repo-wide would be a separate, deliberate change.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Show toolchain (pinned by rust-toolchain.toml)
         run: rustc --version && cargo --version
       - uses: Swatinem/rust-cache@v2
@@ -82,7 +82,7 @@ jobs:
     if: needs.changes.outputs.rust == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: cargo-deny — license policy (deny.toml)
         uses: EmbarkStudios/cargo-deny-action@v2
         with:
@@ -128,7 +128,7 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: qcue-rs
@@ -159,7 +159,7 @@ jobs:
       run:
         working-directory: qcue_app
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
