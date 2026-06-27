@@ -32,10 +32,7 @@ jobs:
             chore
             release
             revert
-          # Scope is optional and free-form (e.g. fix(router): ...).
+          # Scope is optional and free-form (e.g. fix(router): ...). We deliberately do NOT
+          # enforce subject casing: that rejects bot PRs such as Dependabot's
+          # "build(deps): Bump <dep> ..." (capitalised), and the <type> prefix is the real value.
           requireScope: false
-          # Subject must not start with an upper-case letter.
-          subjectPattern: ^(?![A-Z]).+$
-          subjectPatternError: |
-            The PR title subject "{subject}" should start with a lower-case letter,
-            e.g. "feat: add recall prefetch" not "feat: Add recall prefetch".
