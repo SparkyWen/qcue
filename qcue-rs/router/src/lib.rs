@@ -11,6 +11,7 @@ pub mod sanitize;
 pub mod scrub;
 pub mod stt;
 pub mod stt_openai;
+pub mod stt_vendors;
 pub mod structured;
 pub mod stub;
 pub mod tools;
