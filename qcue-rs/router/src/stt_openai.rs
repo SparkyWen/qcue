@@ -9,7 +9,7 @@ use protocol::TranscriptionResult;
 /// OpenAI's default transcription model. `gpt-4o-mini-transcribe-2025-12-15` is OpenAI's recommended
 /// transcription model (lower WER + ~89% fewer hallucinations than whisper-1); pinned to a dated
 /// snapshot so a slug repoint can't silently change behavior. Operators override it WITHOUT a rebuild
-/// via `QCUE_OPENAI_TRANSCRIBE_MODEL` (wired at the `app-server` `OpenAiTranscriber` layer).
+/// via `QCUE_OPENAI_TRANSCRIBE_MODEL` (wired at the `app-server` `RoutedTranscriber` layer).
 pub const DEFAULT_TRANSCRIBE_MODEL: &str = "gpt-4o-mini-transcribe-2025-12-15";
 
 pub struct OpenAiTranscriptionProvider {
