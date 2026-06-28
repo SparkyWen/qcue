@@ -40,6 +40,8 @@ class SettingsSnapshot {
     required this.capMicros,
     required this.serverDream,
     required this.captureLocationEnabled,
+    this.sttSelected,
+    this.sttAvailable = const [],
   });
   final List<ProviderCredential> credentials;
   final Map<String, List<String>> models;
@@ -52,6 +54,10 @@ class SettingsSnapshot {
   /// LOC-R2: whether new captures are tagged with the action-time GPS fix. A
   /// DEVICE-LOCAL toggle (off by default), read from [captureLocationStoreProvider].
   final bool captureLocationEnabled;
+
+  /// D4: the explicit STT provider choice (null ⇒ Auto) + the tenant's configured STT-capable providers.
+  final String? sttSelected;
+  final List<String> sttAvailable;
 }
 
 class SettingsNotifier extends AsyncNotifier<SettingsSnapshot> {
@@ -62,6 +68,7 @@ class SettingsNotifier extends AsyncNotifier<SettingsSnapshot> {
     final credentials = await api.credentials();
     final ledger = await api.costLedger();
     final serverDream = await api.serverDream();
+    final stt = await api.sttProviders();
 
     final models = <String, List<String>>{};
     final active = <String, String?>{};
@@ -84,6 +91,8 @@ class SettingsNotifier extends AsyncNotifier<SettingsSnapshot> {
       serverDream: serverDream,
       // Device-local toggle (off by default) — never round-trips to the server.
       captureLocationEnabled: ref.read(captureLocationStoreProvider).enabled,
+      sttSelected: stt.selected,
+      sttAvailable: stt.available,
     );
   }
 
@@ -104,6 +113,17 @@ class SettingsNotifier extends AsyncNotifier<SettingsSnapshot> {
 
   Future<void> setServerDream(bool on) async {
     await ref.read(settingsRepositoryProvider).setServerDream(on);
+    state = await AsyncValue.guard(build);
+  }
+
+  /// D4: set the explicit STT (voice transcription) provider. `null` ⇒ Auto: the server
+  /// auto-derives the provider from the configured BYOK keys.
+  ///
+  /// Intentionally calls the [apiClientProvider] seam DIRECTLY (like putKey/deleteKey), not the
+  /// [settingsRepositoryProvider] adapter — STT provider selection isn't part of the narrow
+  /// `SettingsApi` (models + privacy) the repository wraps.
+  Future<void> setSttProvider(String? provider) async {
+    await ref.read(apiClientProvider).setSttProvider(provider);
     state = await AsyncValue.guard(build);
   }
 

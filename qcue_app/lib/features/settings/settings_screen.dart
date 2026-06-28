@@ -82,6 +82,9 @@ class SettingsScreen extends ConsumerWidget {
           active: s.activeModels[c.provider],
         ),
       const _Hairline(),
+      const _SectionHeader('Voice transcription'),
+      _SttProviderPickerRow(selected: s.sttSelected, available: s.sttAvailable),
+      const _Hairline(),
       const _SectionHeader('Digest'),
       const _DigestRow(),
       const _Hairline(),
@@ -368,6 +371,54 @@ class _ModelPickerRow extends ConsumerWidget {
                 }
               },
             ),
+        ],
+      ),
+    );
+  }
+}
+
+/// D4: the voice-transcription (STT) provider picker. "Auto" lets the server auto-derive the provider
+/// from the configured BYOK keys; otherwise the user pins a specific STT-capable provider.
+class _SttProviderPickerRow extends ConsumerWidget {
+  const _SttProviderPickerRow({required this.selected, required this.available});
+  final String? selected;
+  final List<String> available;
+
+  static const String _auto = 'auto';
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Auto + configured STT-capable providers (+ a stale pin not in the list, so it still renders).
+    final options = <String>[
+      _auto,
+      ...available,
+      if (selected != null && !available.contains(selected)) selected!,
+    ];
+    return Padding(
+      padding:
+          const EdgeInsets.symmetric(horizontal: QSpace.md, vertical: QSpace.xs),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text('Provider',
+                style: QCueText.body.copyWith(color: context.q.text)),
+          ),
+          DropdownButton<String>(
+            key: const ValueKey('stt-provider-picker'),
+            value: selected ?? _auto,
+            underline: const SizedBox.shrink(),
+            style: QCueText.mono.copyWith(color: context.q.text, fontSize: 14),
+            dropdownColor: context.q.surface,
+            items: [
+              for (final o in options)
+                DropdownMenuItem(value: o, child: Text(o == _auto ? 'Auto' : o)),
+            ],
+            onChanged: (o) {
+              ref
+                  .read(settingsProvider.notifier)
+                  .setSttProvider(o == null || o == _auto ? null : o);
+            },
+          ),
         ],
       ),
     );
