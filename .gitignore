@@ -30,6 +30,9 @@ build/
 **/ios/Flutter/Flutter.framework
 **/ios/Flutter/Flutter.podspec
 **/Podfile.lock
+# QCue commits its iOS Podfile.lock (pinned CocoaPods versions, tracked in the source repo) so the
+# public mirror builds reproducibly — un-ignore that specific file while still ignoring any others.
+!qcue_app/ios/Podfile.lock
 *.mobileprovision
 *.p8
 *.p12
