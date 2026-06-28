@@ -96,9 +96,9 @@ abstract interface class QcueApiClient {
   /// Delete a capture (CAP-R3): soft-delete + wiki cascade server-side, undoable from Activity.
   Future<void> deleteCapture(String id);
 
-  /// Cloud STT (D4): transcribe a recorded audio clip server-side with the tenant's
-  /// BYOK OpenAI key (gpt-4o-transcribe), then the app drops the text into the editable
-  /// compose field for review before capture. Return-envelope: it resolves with the
+  /// Cloud STT (D4): transcribe a recorded audio clip server-side with the tenant's selected (or
+  /// auto-derived) BYOK speech-to-text provider (OpenAI/Groq/Zhipu/Gemini/Qwen/MiniMax), then the app
+  /// drops the text into the editable compose field for review before capture. Return-envelope: it resolves with the
   /// transcript (possibly empty on a provider failure) and never echoes the raw audio.
   /// [audio] is the recorded clip bytes (base64 is the wire form); [language] is an
   /// optional ISO-639-1 hint (null = auto-detect).

@@ -23,7 +23,9 @@ pub struct SttVendor {
     pub kind: SttKind,
     pub base_url: &'static str,
     pub default_model: &'static str,
-    /// Per-vendor audio limits (Zhipu 30s/25MB, Qwen 10MB) — checked pre-call (S1-R81).
+    /// Per-vendor audio limits. `max_bytes` is enforced pre-call by `SttRouter` (S1-R81). `max_seconds`
+    /// is ADVISORY metadata (Hermes `max_audio_seconds`): clip duration isn't derivable from raw bytes
+    /// without decoding, so the provider enforces it server-side. (Zhipu 30s/25MB, Qwen 10MB.)
     pub max_bytes: usize,
     pub max_seconds: u32,
 }

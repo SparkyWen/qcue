@@ -187,10 +187,16 @@ class HttpApiClient implements QcueApiClient {
     return res['transcript'] as String? ?? '';
   }
 
-  /// The server's no-key envelope reads "no OpenAI key configured — add one in Settings…".
+  /// The server's no-key / no-provider envelopes (multi-provider D4) read e.g.
+  /// "no speech-to-text provider configured — add a key for OpenAI, Groq…", "no usable <p> key —
+  /// check your key in Settings", or the legacy "no OpenAI key configured…".
   bool _looksLikeMissingKey(String error) {
     final e = error.toLowerCase();
-    return e.contains('no openai key') || e.contains('key configured');
+    return e.contains('no usable') ||
+        e.contains('no speech-to-text provider') ||
+        e.contains('add a key') ||
+        e.contains('key configured') ||
+        e.contains('no openai key');
   }
 
   @override
