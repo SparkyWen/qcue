@@ -19,6 +19,12 @@ import 'package:qcue_app/features/capture/quick_capture_screen.dart';
 /// Records capture() calls; everything else delegates to a seeded stub so the
 /// captureFeedProvider can load + commit normally.
 class RecordingApiClient implements QcueApiClient {
+  @override
+  Future<SttProviders> sttProviders() async =>
+      const SttProviders(selected: null, available: [], allCapable: []);
+  @override
+  Future<void> setSttProvider(String? provider) async {}
+
   final _d = StubApiClient.seeded();
   final List<(String body, String origin)> captured = [];
 

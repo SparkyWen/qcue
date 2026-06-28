@@ -18,6 +18,12 @@ import 'package:qcue_app/features/wiki/wiki_provider.dart';
 /// seeded data (the warm cache after a sync snapshot). Only the read methods are needed; everything
 /// else routes to noSuchMethod (never called by these tests).
 class _ColdThenWarmApi implements QcueApiClient {
+  @override
+  Future<SttProviders> sttProviders() async =>
+      const SttProviders(selected: null, available: [], allCapable: []);
+  @override
+  Future<void> setSttProvider(String? provider) async {}
+
   final _seed = StubApiClient.seeded();
   int captureReads = 0;
   int wikiReads = 0;

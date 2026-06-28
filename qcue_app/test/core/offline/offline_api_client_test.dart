@@ -23,6 +23,12 @@ import 'package:qcue_app/core/sync/sync_dtos.dart';
 /// composes a seeded [StubApiClient] (a factory, so we delegate rather than
 /// extend) and only intercepts the four methods the decorator caches.
 class FakeInner implements QcueApiClient {
+  @override
+  Future<SttProviders> sttProviders() async =>
+      const SttProviders(selected: null, available: [], allCapable: []);
+  @override
+  Future<void> setSttProvider(String? provider) async {}
+
   final StubApiClient _stub = StubApiClient.seeded();
   bool online = true;
   final List<String> captured = [];

@@ -15,6 +15,12 @@ import 'package:qcue_app/features/recall/recall_provider.dart';
 /// Records the threadId passed to recallStream and returns a controllable stream;
 /// everything else delegates to a seeded stub (REC-R7).
 class RecordingRecallClient implements QcueApiClient {
+  @override
+  Future<SttProviders> sttProviders() async =>
+      const SttProviders(selected: null, available: [], allCapable: []);
+  @override
+  Future<void> setSttProvider(String? provider) async {}
+
   final _d = StubApiClient.seeded();
   StreamController<SseEvent>? _ctrl;
   String? lastThreadId;
