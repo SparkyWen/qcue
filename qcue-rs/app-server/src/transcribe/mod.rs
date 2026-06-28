@@ -98,7 +98,7 @@ impl RoutedTranscriber {
             "SELECT key_ciphertext,key_nonce,key_tag,dek_wrapped,kek_id,key_hint \
              FROM provider_credentials \
              WHERE provider=$1 AND status <> 'dead' \
-             ORDER BY priority LIMIT 1",
+             ORDER BY (status = 'ok') DESC, priority LIMIT 1",
         )
         .bind(provider)
         .fetch_optional(&mut *tx)
@@ -268,6 +268,10 @@ impl Transcriber for RoutedTranscriber {
         };
         // The plaintext is copied into the request for this call only, then `key` drops (zeroed).
         let provider = self.build_provider(vendor, key.as_str().to_string());
+        // Hermes-parity model auto-correction: a per-call model meant for ANOTHER vendor → this
+        // vendor's default. Only when a per-call model is given — `None` is left as-is so the
+        // provider's own default applies (incl. the QCUE_OPENAI_TRANSCRIBE_MODEL override for openai).
+        let model = model.map(|m| router::stt_vendors::resolve_model(vendor, Some(m)));
         SttRouter::new(vec![provider])
             .with_constraints(vendor.constraints())
             .transcribe(audio, model, language)
