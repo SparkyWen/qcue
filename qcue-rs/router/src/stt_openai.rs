@@ -17,6 +17,9 @@ pub struct OpenAiTranscriptionProvider {
     api_key: String,
     base_url: String,
     default_model: String,
+    /// The provider id reported in `name()` + the result envelope. Defaults to "openai"; Groq/Zhipu
+    /// (which reuse this multipart provider via a base_url+model swap) override it to their own id.
+    provider_name: String,
 }
 
 impl OpenAiTranscriptionProvider {
@@ -27,6 +30,7 @@ impl OpenAiTranscriptionProvider {
             api_key,
             base_url: "https://api.openai.com/v1".into(),
             default_model: DEFAULT_TRANSCRIBE_MODEL.into(),
+            provider_name: "openai".into(),
         }
     }
 
@@ -43,12 +47,18 @@ impl OpenAiTranscriptionProvider {
         self
     }
 
-    fn fail(msg: String) -> TranscriptionResult {
+    /// Override the provider id reported in `name()` + the result envelope (e.g. "groq", "zhipu").
+    pub fn with_provider_name(mut self, name: impl Into<String>) -> Self {
+        self.provider_name = name.into();
+        self
+    }
+
+    fn fail(&self, msg: String) -> TranscriptionResult {
         TranscriptionResult {
             success: false,
             transcript: String::new(),
             error: Some(msg),
-            provider: "openai".into(),
+            provider: self.provider_name.clone(),
         }
     }
 }
@@ -128,7 +138,7 @@ pub fn audio_head_hex(bytes: &[u8], n: usize) -> String {
 #[async_trait]
 impl TranscriptionProvider for OpenAiTranscriptionProvider {
     fn name(&self) -> &str {
-        "openai"
+        &self.provider_name
     }
     fn default_model(&self) -> Option<&str> {
         Some(&self.default_model)
@@ -150,7 +160,7 @@ impl TranscriptionProvider for OpenAiTranscriptionProvider {
             .mime_str(fmt.mime)
         {
             Ok(p) => p,
-            Err(e) => return Self::fail(format!("openai stt: bad audio part: {e}")),
+            Err(e) => return self.fail(format!("{} stt: bad audio part: {e}", self.provider_name)),
         };
         let mut form = reqwest::multipart::Form::new().text("model", model).part("file", part);
         if let Some(lang) = language.filter(|l| !l.is_empty()) {
@@ -160,7 +170,7 @@ impl TranscriptionProvider for OpenAiTranscriptionProvider {
         let resp = self.client.post(&url).bearer_auth(&self.api_key).multipart(form).send().await;
         let resp = match resp {
             Ok(r) => r,
-            Err(e) => return Self::fail(format!("openai stt transport: {e}")),
+            Err(e) => return self.fail(format!("{} stt transport: {e}", self.provider_name)),
         };
         let status = resp.status();
         let body = resp.text().await.unwrap_or_default();
@@ -173,7 +183,7 @@ impl TranscriptionProvider for OpenAiTranscriptionProvider {
             if status.as_u16() == 400
                 && (lower.contains("corrupt") || lower.contains("unsupported"))
             {
-                return Self::fail(format!(
+                return self.fail(format!(
                     "the recording couldn't be read by the speech service \
                      ({} bytes, detected {}). It was likely too short or didn't finish recording — \
                      hold the mic and speak for at least a second, then try again.",
@@ -181,7 +191,7 @@ impl TranscriptionProvider for OpenAiTranscriptionProvider {
                     fmt.kind,
                 ));
             }
-            return Self::fail(format!("openai stt {}: {}", status.as_u16(), body));
+            return self.fail(format!("{} stt {}: {}", self.provider_name, status.as_u16(), body));
         }
         match serde_json::from_str::<serde_json::Value>(&body) {
             Ok(v) => {
@@ -191,10 +201,10 @@ impl TranscriptionProvider for OpenAiTranscriptionProvider {
                     success: true,
                     transcript: text,
                     error: None,
-                    provider: "openai".into(),
+                    provider: self.provider_name.clone(),
                 }
             }
-            Err(e) => Self::fail(format!("openai stt decode: {e}")),
+            Err(e) => self.fail(format!("{} stt decode: {e}", self.provider_name)),
         }
     }
 }

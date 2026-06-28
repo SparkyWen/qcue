@@ -181,3 +181,22 @@ async fn openai_corrupted_400_becomes_an_actionable_message_with_size_and_format
     // and it must NOT leak the raw OpenAI JSON / status code at the user
     assert!(!err.contains("invalid_value"), "raw provider JSON must not surface: {err}");
 }
+
+#[tokio::test]
+async fn provider_name_override_is_reflected_in_the_envelope() {
+    // Groq/Zhipu reuse this provider via base_url+model; the envelope must report THEIR id, not "openai".
+    let server = MockServer::start().await;
+    Mock::given(method("POST"))
+        .and(path("/audio/transcriptions"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({"text": "hi"})))
+        .mount(&server)
+        .await;
+    let p = OpenAiTranscriptionProvider::new(client(), "k".into())
+        .with_base_url(server.uri())
+        .with_provider_name("zhipu")
+        .with_model("glm-asr-2512");
+    let r = p.transcribe(&wav_head(), None, None).await;
+    assert!(r.success, "error: {:?}", r.error);
+    assert_eq!(r.provider, "zhipu");
+    assert_eq!(p.name(), "zhipu");
+}
