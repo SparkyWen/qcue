@@ -4,19 +4,60 @@ use crate::error::ApiError;
 use crate::state::AppState;
 use crate::tenancy::TenantCtx;
 use axum::extract::{DefaultBodyLimit, State};
-use axum::routing::post;
+use axum::routing::{get, post};
 use axum::{Json, Router};
 use base64::Engine;
 use serde::Deserialize;
+use uuid::Uuid;
 
 /// ~25 MB of audio + base64 overhead (≈4/3). Matches the router's `AudioConstraints::max_bytes`.
 const MAX_TRANSCRIBE_BODY_BYTES: usize = 35 * 1024 * 1024;
 
 pub fn routes() -> Router<AppState> {
-    Router::new().route(
-        "/v1/transcribe",
-        post(transcribe).layer(DefaultBodyLimit::max(MAX_TRANSCRIBE_BODY_BYTES)),
+    Router::new()
+        .route(
+            "/v1/transcribe",
+            post(transcribe).layer(DefaultBodyLimit::max(MAX_TRANSCRIBE_BODY_BYTES)),
+        )
+        .route("/v1/transcribe/providers", get(list_stt_providers))
+}
+
+/// `GET /v1/transcribe/providers` — the STT picker payload for the caller's tenant:
+///   `{ selected, available, all_capable }`
+/// where `available` = the tenant's configured non-dead BYOK providers that are STT-capable (in the
+/// same priority order auto-derive uses), `all_capable` = every STT-capable vendor, and `selected` =
+/// the explicit `settings:stt_provider` choice (null/"auto" ⇒ Auto). Ad-hoc JSON (no codegen type),
+/// matching the transcribe route's response style.
+async fn list_stt_providers(mut ctx: TenantCtx) -> Result<Json<serde_json::Value>, ApiError> {
+    // The extractor already bound `app.tenant_id` on this tx → RLS-scoped reads.
+    let configured: Vec<String> = sqlx::query_scalar(
+        "SELECT provider FROM provider_credentials WHERE status <> 'dead' \
+         GROUP BY provider ORDER BY MIN(priority), provider",
     )
+    .fetch_all(&mut *ctx.tx)
+    .await?;
+    let sel: Option<serde_json::Value> =
+        sqlx::query_scalar("SELECT value FROM session_kv WHERE session_id=$1 AND key=$2")
+            .bind(Uuid::nil())
+            .bind("settings:stt_provider")
+            .fetch_optional(&mut *ctx.tx)
+            .await?;
+    ctx.tx.commit().await?;
+
+    let available: Vec<&str> = configured
+        .iter()
+        .map(String::as_str)
+        .filter(|p| router::stt_vendors::is_stt_capable(p))
+        .collect();
+    let all_capable: Vec<&str> = router::stt_vendors::STT_VENDORS.iter().map(|v| v.id).collect();
+    let selected = sel
+        .and_then(|v| v.get("provider").and_then(|p| p.as_str()).map(str::to_string))
+        .filter(|s| s != "auto");
+    Ok(Json(serde_json::json!({
+        "selected": selected,
+        "available": available,
+        "all_capable": all_capable,
+    })))
 }
 
 #[derive(Deserialize)]

@@ -30,6 +30,10 @@ pub fn routes() -> Router<AppState> {
             get(get_active).put(set_active),
         )
         .route("/v1/settings/dream", get(get_dream).put(set_dream))
+        .route(
+            "/v1/settings/stt-provider",
+            get(get_stt_provider).put(set_stt_provider),
+        )
 }
 
 /// The settings blackboard session: a fixed nil-UUID `session_id` so per-(tenant,provider) settings
@@ -162,4 +166,59 @@ async fn set_dream(
     .await?;
     ctx.tx.commit().await?;
     Ok(Json(serde_json::json!({ "enabled": req.enabled })))
+}
+
+/// The `session_kv` key for the per-tenant voice-transcription (STT) provider choice (settings session).
+/// Consumed by `crate::transcribe::RoutedTranscriber::explicit_setting` for D4 provider selection.
+const STT_PROVIDER_KEY: &str = "settings:stt_provider";
+
+/// `GET /v1/settings/stt-provider` — the per-tenant STT provider choice, or `{provider:null}` when unset
+/// (⇒ "Auto" in the client; the transcriber auto-derives from the configured BYOK keys). A stored value
+/// of `"auto"` is returned verbatim and also means auto-derive.
+async fn get_stt_provider(mut ctx: TenantCtx) -> Result<Json<serde_json::Value>, ApiError> {
+    let val: Option<serde_json::Value> =
+        sqlx::query_scalar("SELECT value FROM session_kv WHERE session_id=$1 AND key=$2")
+            .bind(SETTINGS_SESSION)
+            .bind(STT_PROVIDER_KEY)
+            .fetch_optional(&mut *ctx.tx)
+            .await?;
+    ctx.tx.commit().await?;
+    let provider = val.and_then(|v| v.get("provider").and_then(|p| p.as_str()).map(str::to_string));
+    Ok(Json(serde_json::json!({ "provider": provider })))
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct SetSttProviderReq {
+    provider: String,
+}
+
+/// `PUT /v1/settings/stt-provider` `{provider}` — persist the STT provider choice. Accepts `"auto"` or
+/// any STT-capable vendor id; a non-STT provider (e.g. `deepseek`/`anthropic`) is rejected with 400 so
+/// the picker can't persist a choice the transcriber would have to error on.
+async fn set_stt_provider(
+    mut ctx: TenantCtx,
+    Json(req): Json<SetSttProviderReq>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    let p = req.provider.trim();
+    if p != "auto" && !router::stt_vendors::is_stt_capable(p) {
+        ctx.tx.commit().await?;
+        return Err(ApiError::BadRequest(format!(
+            "'{p}' does not support voice transcription"
+        )));
+    }
+    let value = serde_json::json!({ "provider": p });
+    sqlx::query(
+        "INSERT INTO session_kv (tenant_id, session_id, key, value) VALUES ($1,$2,$3,$4) \
+         ON CONFLICT (tenant_id, session_id, key) DO UPDATE \
+           SET value=EXCLUDED.value, version=session_kv.version+1, updated_at=now()",
+    )
+    .bind(ctx.tenant_id)
+    .bind(SETTINGS_SESSION)
+    .bind(STT_PROVIDER_KEY)
+    .bind(&value)
+    .execute(&mut *ctx.tx)
+    .await?;
+    ctx.tx.commit().await?;
+    Ok(Json(serde_json::json!({ "provider": p })))
 }
