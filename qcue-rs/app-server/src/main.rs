@@ -85,9 +85,9 @@ async fn main() -> anyhow::Result<()> {
     ));
     let ingest_llm: Arc<dyn wiki::llm::WikiLlm> =
         Arc::new(RouterWikiLlm::live(pool.clone(), kms.clone(), "(ingest unavailable)"));
-    // Voice transcription via the tenant's BYOK OpenAI key (gpt-4o-mini-transcribe) — D4.
+    // Voice transcription via the tenant's selected/auto-derived STT BYOK provider — D4 (multi-provider).
     let transcriber: Arc<dyn app_server::transcribe::Transcriber> =
-        Arc::new(app_server::transcribe::OpenAiTranscriber::new(pool.clone(), secrets.clone()));
+        Arc::new(app_server::transcribe::RoutedTranscriber::new(pool.clone(), secrets.clone()));
     let state = AppState {
         cfg: cfg.clone(),
         pool,

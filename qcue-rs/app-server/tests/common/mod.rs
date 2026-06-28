@@ -613,3 +613,39 @@ pub async fn insert_cred(
     .unwrap();
     tx.commit().await.unwrap();
 }
+
+// ── multi-provider STT selection helpers (Task 5/6) ─────────────────────────────────────────
+
+/// A test router whose transcriber is the REAL `RoutedTranscriber` (selection logic under test).
+/// `insert_cred` seeds placeholder ciphertext, so the selected provider's key does NOT decrypt — these
+/// tests assert WHICH provider/error the resolver returns (selection), not a real transcript.
+pub fn routed_test_router(db: &TestDb) -> Router {
+    let mut st = app_state(db);
+    st.transcriber = Arc::new(app_server::transcribe::RoutedTranscriber::new(
+        db.app.clone(),
+        st.secrets.clone(),
+    ));
+    app_server::router::build_router(st)
+}
+
+/// Upsert the explicit per-tenant STT provider setting (session_kv `settings:stt_provider`).
+pub async fn set_stt_provider(db: &TestDb, tenant: Uuid, provider: &str) {
+    let mut tx = db.app.begin().await.unwrap();
+    sqlx::query("SELECT set_config('app.tenant_id', $1, true)")
+        .bind(tenant.to_string())
+        .execute(&mut *tx)
+        .await
+        .unwrap();
+    sqlx::query(
+        "INSERT INTO session_kv (tenant_id, session_id, key, value) \
+         VALUES ($1,$2,'settings:stt_provider',$3) \
+         ON CONFLICT (tenant_id, session_id, key) DO UPDATE SET value=EXCLUDED.value",
+    )
+    .bind(tenant)
+    .bind(Uuid::nil())
+    .bind(serde_json::json!({ "provider": provider }))
+    .execute(&mut *tx)
+    .await
+    .unwrap();
+    tx.commit().await.unwrap();
+}
