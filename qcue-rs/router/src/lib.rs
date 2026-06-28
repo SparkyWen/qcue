@@ -10,6 +10,7 @@ pub mod retry_loop;
 pub mod sanitize;
 pub mod scrub;
 pub mod stt;
+pub mod stt_chat_audio;
 pub mod stt_openai;
 pub mod stt_vendors;
 pub mod structured;
