@@ -368,6 +368,12 @@ class OfflineAwareApiClient implements QcueApiClient {
   Future<void> setServerDream(bool on) => _inner.setServerDream(on);
 
   @override
+  Future<SttProviders> sttProviders() => _inner.sttProviders();
+
+  @override
+  Future<void> setSttProvider(String? provider) => _inner.setSttProvider(provider);
+
+  @override
   Future<void> deleteAccount() async {
     await _inner.deleteAccount();
     // This decorator owns the local cache — wipe it so a deleted account leaves

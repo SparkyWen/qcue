@@ -26,6 +26,12 @@ import 'package:qcue_app/core/sync/sync_dtos.dart';
 /// A seeded inner client whose network can be flipped offline; records the
 /// (body, origin) pairs the server "received" so we can assert exactly-once.
 class _Inner implements QcueApiClient {
+  @override
+  Future<SttProviders> sttProviders() async =>
+      const SttProviders(selected: null, available: [], allCapable: []);
+  @override
+  Future<void> setSttProvider(String? provider) async {}
+
   final StubApiClient _stub = StubApiClient.seeded();
   bool online = true;
   final List<(String, String)> received = [];

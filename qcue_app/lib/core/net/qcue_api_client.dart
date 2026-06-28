@@ -20,6 +20,20 @@ export '../models/transcribe_error.dart';
 /// Connection lifecycle states surfaced to the UI (status dot, offline banner).
 enum ApiConnectionState { disconnected, connecting, connected, reconnecting }
 
+/// The STT picker payload from `GET /v1/transcribe/providers` (D4 multi-provider voice):
+/// [available] = the tenant's configured STT-capable BYOK providers (auto-derive priority order);
+/// [allCapable] = every STT-capable vendor; [selected] = the explicit choice (null ⇒ "Auto").
+class SttProviders {
+  const SttProviders({
+    required this.selected,
+    required this.available,
+    required this.allCapable,
+  });
+  final String? selected;
+  final List<String> available;
+  final List<String> allCapable;
+}
+
 /// The narrow transport surface the rest of the app depends on. Implementations:
 ///  - WssApiClient (JSON-RPC-lite, no `jsonrpc` field; sends the JWT only).
 ///  - SseApiClient (`?token=` auth; replay-on-reconnect via ring-buffer offset;
@@ -189,6 +203,16 @@ abstract interface class QcueApiClient {
 
   /// Toggle the server-readable / server-Dream posture (D9).
   Future<void> setServerDream(bool on);
+
+  // ── Voice transcription provider (D4 multi-provider STT) ──
+
+  /// The STT picker payload (`GET /v1/transcribe/providers`): configured STT-capable providers,
+  /// all STT-capable vendors, and the current explicit selection (null ⇒ Auto / auto-derive).
+  Future<SttProviders> sttProviders();
+
+  /// Set the explicit STT provider (`PUT /v1/settings/stt-provider`). `null` (or "auto") ⇒ Auto:
+  /// the server auto-derives the provider from the configured BYOK keys.
+  Future<void> setSttProvider(String? provider);
 
   // ── Sync (Phase 1: read sync) ──
 
@@ -659,6 +683,21 @@ class StubApiClient implements QcueApiClient {
   @override
   Future<void> setServerDream(bool on) async {
     serverDreamEnabled = on;
+  }
+
+  /// In-memory STT provider choice so the stub roundtrips set→get (null ⇒ Auto).
+  String? sttProviderChoice;
+
+  @override
+  Future<SttProviders> sttProviders() async => SttProviders(
+        selected: sttProviderChoice,
+        available: const ['openai', 'zhipu'],
+        allCapable: const ['openai', 'groq', 'zhipu', 'gemini', 'qwen', 'minimax'],
+      );
+
+  @override
+  Future<void> setSttProvider(String? provider) async {
+    sttProviderChoice = (provider == null || provider == 'auto') ? null : provider;
   }
 
   // ── Sync (Phase 1) ──

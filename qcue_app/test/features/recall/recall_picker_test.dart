@@ -19,6 +19,12 @@ import 'package:qcue_app/features/recall/recall_selection.dart';
 /// Records the per-recall override passed to recallStream; everything else is
 /// stubbed via noSuchMethod (only recallStream + an empty stream are exercised).
 class _RecordingClient implements QcueApiClient {
+  @override
+  Future<SttProviders> sttProviders() async =>
+      const SttProviders(selected: null, available: [], allCapable: []);
+  @override
+  Future<void> setSttProvider(String? provider) async {}
+
   String? provider, model, effort;
   final controller = StreamController<SseEvent>.broadcast();
 

@@ -26,6 +26,12 @@ import 'package:qcue_app/widgets/streaming_text.dart';
 /// test asserts the answer grows *incrementally* (not just at completion).
 /// Everything else delegates to a seeded stub.
 class ScriptedApiClient implements QcueApiClient {
+  @override
+  Future<SttProviders> sttProviders() async =>
+      const SttProviders(selected: null, available: [], allCapable: []);
+  @override
+  Future<void> setSttProvider(String? provider) async {}
+
   final _delegate = StubApiClient.seeded();
   final controller = StreamController<SseEvent>();
 

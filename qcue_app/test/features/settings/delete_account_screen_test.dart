@@ -120,6 +120,12 @@ void main() {
 /// A client whose account delete always fails (network down / 500), delegating
 /// the settings reads to a seeded stub so the screen still builds.
 class _ThrowingDeleteApi implements QcueApiClient {
+  @override
+  Future<SttProviders> sttProviders() async =>
+      const SttProviders(selected: null, available: [], allCapable: []);
+  @override
+  Future<void> setSttProvider(String? provider) async {}
+
   final StubApiClient _stub = StubApiClient.seeded();
   @override
   Future<void> deleteAccount() async => throw Exception('network down');

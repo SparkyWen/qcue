@@ -20,6 +20,12 @@ import 'package:qcue_app/features/wiki/wiki_screen.dart';
 /// Records runIngest() calls and returns a fixed enqueued count; everything else delegates to a seeded
 /// stub so Settings/Wiki load normally.
 class DigestRecordingApi implements QcueApiClient {
+  @override
+  Future<SttProviders> sttProviders() async =>
+      const SttProviders(selected: null, available: [], allCapable: []);
+  @override
+  Future<void> setSttProvider(String? provider) async {}
+
   final _d = StubApiClient.seeded();
   int calls = 0;
 

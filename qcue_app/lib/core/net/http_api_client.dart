@@ -418,6 +418,21 @@ class HttpApiClient implements QcueApiClient {
     await _putJson('/v1/settings/dream', {'enabled': on});
   }
 
+  @override
+  Future<SttProviders> sttProviders() async {
+    final res = await _getJson('/v1/transcribe/providers');
+    return SttProviders(
+      selected: res['selected'] as String?,
+      available: (res['available'] as List? ?? const []).cast<String>(),
+      allCapable: (res['all_capable'] as List? ?? const []).cast<String>(),
+    );
+  }
+
+  @override
+  Future<void> setSttProvider(String? provider) async {
+    await _putJson('/v1/settings/stt-provider', {'provider': provider ?? 'auto'});
+  }
+
   // ── Sync (Phase 1: read sync) ──
 
   @override
