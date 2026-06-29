@@ -7,6 +7,30 @@ aims to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once p
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-06-29
+
+Incremental release. Headline: **multi-provider voice transcription (speech-to-text)** — mic capture
+can now be transcribed by any STT-capable BYOK provider, not just one.
+
+### Added
+
+- **Server-side multi-provider speech-to-text.** Voice capture is now transcribed by your choice of
+  STT-capable BYOK provider — **OpenAI, Groq, Zhipu, Gemini, Qwen** — selected from a new
+  Settings → **"Voice transcription"** picker (**Auto**, or pin a specific provider). The backend
+  exposes the STT capability surface (`/v1/transcribe/providers`, `/v1/settings/stt-provider`) and a
+  `RoutedTranscriber` that resolves the provider per tenant, with model auto-correction and **no silent
+  cross-provider fallback**.
+
+### Fixed
+
+- Transcription now prefers a healthy STT key and shows clearer UX when no STT-capable key is configured.
+- Qwen STT responses that omit the text part are parsed correctly.
+
+### Notes
+
+- Continues the public release line started at 1.1.0; from here, notes cover only the incremental
+  changes per version.
+
 ## [1.1.0] - 2026-06-26
 
 First public **AGPL-3.0 source release** of QCue, and its first public Android APK. The public
