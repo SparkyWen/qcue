@@ -692,7 +692,7 @@ class StubApiClient implements QcueApiClient {
   Future<SttProviders> sttProviders() async => SttProviders(
         selected: sttProviderChoice,
         available: const ['openai', 'zhipu'],
-        allCapable: const ['openai', 'groq', 'zhipu', 'gemini', 'qwen', 'minimax'],
+        allCapable: const ['openai', 'groq', 'zhipu', 'gemini', 'qwen'],
       );
 
   @override

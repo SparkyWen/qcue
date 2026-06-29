@@ -101,8 +101,9 @@ async fn providers_endpoint_lists_configured_stt_capable_only(pool: PgPool) {
     assert!(available.contains(&"openai".to_string()), "available={available:?}");
     assert!(!available.contains(&"deepseek".to_string()), "deepseek is not STT-capable");
     let all_capable: Vec<String> = serde_json::from_value(v["all_capable"].clone()).unwrap();
-    assert!(all_capable.contains(&"minimax".to_string()));
+    assert!(all_capable.contains(&"qwen".to_string()));
     assert!(all_capable.contains(&"gemini".to_string()));
+    assert!(!all_capable.contains(&"minimax".to_string()), "MiniMax removed from the STT list");
 }
 
 #[sqlx::test(migrations = "../migrations")]

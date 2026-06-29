@@ -10,7 +10,8 @@ void main() {
     final p = await api.sttProviders();
     expect(p.allCapable, contains('openai'));
     expect(p.allCapable, contains('zhipu'));
-    expect(p.allCapable, contains('minimax'));
+    expect(p.allCapable, contains('qwen'));
+    expect(p.allCapable, isNot(contains('minimax')));
     expect(p.selected, isNull, reason: 'defaults to Auto');
 
     await api.setSttProvider('zhipu');
