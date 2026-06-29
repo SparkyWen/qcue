@@ -9,7 +9,9 @@ fn known_vendors_resolve_with_their_family_and_limits() {
     assert_eq!(z.default_model, "glm-asr-2512");
     assert_eq!(z.max_seconds, 30); // Zhipu's tighter cap
     assert_eq!(stt_vendor("qwen").unwrap().kind, SttKind::ChatAudio);
-    assert_eq!(stt_vendor("minimax").unwrap().kind, SttKind::MiniMax);
+    assert!(stt_vendor("qwen").unwrap().audio_only, "Qwen is a dedicated ASR model (no text part)");
+    assert!(!stt_vendor("gemini").unwrap().audio_only, "Gemini needs the text instruction");
+    assert!(stt_vendor("minimax").is_none(), "MiniMax removed from the STT list for now");
 }
 
 #[test]

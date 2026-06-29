@@ -187,7 +187,7 @@ impl RoutedTranscriber {
             }
         }
         Err("no speech-to-text provider configured — add a key for OpenAI, Groq, Zhipu, Gemini, \
-             Qwen, or MiniMax in Settings to use voice"
+             or Qwen in Settings to use voice"
             .into())
     }
 
@@ -220,13 +220,17 @@ impl RoutedTranscriber {
                     "chat-audio STT vendor {} has an empty default_model",
                     vendor.id
                 );
-                Box::new(ChatAudioTranscriptionProvider::new(
-                    self.client.clone(),
-                    key,
-                    vendor.base_url,
-                    vendor.default_model,
-                    vendor.id,
-                ))
+                Box::new(
+                    ChatAudioTranscriptionProvider::new(
+                        self.client.clone(),
+                        key,
+                        vendor.base_url,
+                        vendor.default_model,
+                        vendor.id,
+                    )
+                    // Qwen (dedicated ASR) must NOT receive a text part; Gemini needs it.
+                    .audio_only(vendor.audio_only),
+                )
             }
             SttKind::MiniMax => Box::new(MiniMaxTranscriptionProvider::new(
                 self.client.clone(),

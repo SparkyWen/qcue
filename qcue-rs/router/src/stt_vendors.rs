@@ -28,6 +28,10 @@ pub struct SttVendor {
     /// without decoding, so the provider enforces it server-side. (Zhipu 30s/25MB, Qwen 10MB.)
     pub max_bytes: usize,
     pub max_seconds: u32,
+    /// `ChatAudio` only: send just the `input_audio` part, no text instruction. A *dedicated* ASR
+    /// model (Qwen `qwen3-asr-flash`) 400s on any non-audio content part; a *general* multimodal
+    /// model (Gemini) needs the "transcribe this" instruction. Ignored by other families.
+    pub audio_only: bool,
 }
 
 impl SttVendor {
@@ -48,6 +52,7 @@ pub const STT_VENDORS: &[SttVendor] = &[
         default_model: "gpt-4o-mini-transcribe-2025-12-15",
         max_bytes: 25 * MB,
         max_seconds: 600,
+        audio_only: false,
     },
     SttVendor {
         id: "groq",
@@ -56,6 +61,7 @@ pub const STT_VENDORS: &[SttVendor] = &[
         default_model: "whisper-large-v3-turbo",
         max_bytes: 25 * MB,
         max_seconds: 600,
+        audio_only: false,
     },
     SttVendor {
         id: "zhipu",
@@ -64,6 +70,7 @@ pub const STT_VENDORS: &[SttVendor] = &[
         default_model: "glm-asr-2512",
         max_bytes: 25 * MB,
         max_seconds: 30,
+        audio_only: false,
     },
     SttVendor {
         id: "gemini",
@@ -72,6 +79,7 @@ pub const STT_VENDORS: &[SttVendor] = &[
         default_model: "gemini-2.5-flash",
         max_bytes: 20 * MB,
         max_seconds: 540,
+        audio_only: false,
     },
     SttVendor {
         id: "qwen",
@@ -80,19 +88,12 @@ pub const STT_VENDORS: &[SttVendor] = &[
         default_model: "qwen3-asr-flash",
         max_bytes: 10 * MB,
         max_seconds: 180,
+        // Qwen is a DEDICATED ASR model: it 400s if the chat-audio request carries a text part.
+        audio_only: true,
     },
-    // minimax: base_url/default_model confirmed in Task 4 step 1 (ASR docs behind console login).
-    // default_model is intentionally empty until Task 4 — only the MiniMax provider may read it, and
-    // its impl must not require a non-empty model. Task 5's build_provider debug_asserts non-empty for
-    // every OTHER (Multipart/ChatAudio) vendor so an empty model can't silently reach the network.
-    SttVendor {
-        id: "minimax",
-        kind: SttKind::MiniMax,
-        base_url: "https://api.minimax.io/v1",
-        default_model: "",
-        max_bytes: 20 * MB,
-        max_seconds: 600,
-    },
+    // MiniMax intentionally NOT listed: its newer `sk-api-…` key uses no GroupId, and no public ASR
+    // endpoint has been confirmed (MiniMax is TTS-first). The `SttKind::MiniMax` family + provider impl
+    // are kept so it can be re-added here once a real ASR endpoint is confirmed.
 ];
 
 /// Look up a vendor by id (case-insensitive). `None` for unknown / non-STT providers (e.g. deepseek).

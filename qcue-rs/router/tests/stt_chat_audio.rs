@@ -88,6 +88,39 @@ async fn chat_audio_non_json_2xx_body_is_an_envelope() {
     assert!(r.error.unwrap().to_lowercase().contains("decode"));
 }
 
+// The audio_only flag controls whether a text-instruction content part is sent: Qwen (dedicated
+// ASR) gets ONLY the input_audio part (a text part → HTTP 400); Gemini (general model) gets both.
+#[tokio::test]
+async fn audio_only_controls_whether_the_text_instruction_is_sent() {
+    async fn content_parts(audio_only: bool) -> Vec<serde_json::Value> {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/chat/completions"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "choices": [{"message": {"content": "ok"}}]
+            })))
+            .mount(&server)
+            .await;
+        let p = ChatAudioTranscriptionProvider::new(
+            client(), "k".into(), server.uri(), "qwen3-asr-flash", "qwen")
+        .audio_only(audio_only);
+        let r = p.transcribe(b"RIFF\0\0\0\0WAVEfmt ", None, Some("zh")).await;
+        assert!(r.success, "error: {:?}", r.error);
+        let reqs = server.received_requests().await.unwrap();
+        let body: serde_json::Value = serde_json::from_slice(&reqs[0].body).unwrap();
+        body["messages"][0]["content"].as_array().unwrap().clone()
+    }
+    // Default (Gemini, general model): input_audio + a "transcribe this" text instruction.
+    let general = content_parts(false).await;
+    assert_eq!(general.len(), 2, "general models get the text instruction");
+    assert!(general.iter().any(|p| p["type"] == "input_audio"));
+    assert!(general.iter().any(|p| p["type"] == "text"));
+    // audio_only (Qwen, dedicated ASR): ONLY the input_audio part — a text part would 400.
+    let asr = content_parts(true).await;
+    assert_eq!(asr.len(), 1, "Qwen must get exactly one (input_audio) part");
+    assert_eq!(asr[0]["type"], "input_audio");
+}
+
 // Live validation of the real `input_audio` wire shape. Ignored by default.
 // QCUE_LIVE_QWEN_KEY=sk-... QCUE_LIVE_AUDIO=/path/clip.m4a \
 //   cargo test -p router --test stt_chat_audio live_qwen -- --ignored --nocapture
@@ -97,7 +130,8 @@ async fn live_qwen_transcribes_a_real_clip() {
     let key = std::env::var("QCUE_LIVE_QWEN_KEY").expect("set QCUE_LIVE_QWEN_KEY");
     let audio = std::fs::read(std::env::var("QCUE_LIVE_AUDIO").expect("set QCUE_LIVE_AUDIO")).unwrap();
     let p = ChatAudioTranscriptionProvider::new(
-        client(), key, "https://dashscope.aliyuncs.com/compatible-mode/v1", "qwen3-asr-flash", "qwen");
+        client(), key, "https://dashscope.aliyuncs.com/compatible-mode/v1", "qwen3-asr-flash", "qwen")
+    .audio_only(true);
     let r = p.transcribe(&audio, None, None).await;
     eprintln!("qwen: success={} transcript={:?} error={:?}", r.success, r.transcript, r.error);
     assert!(r.success, "{:?}", r.error);

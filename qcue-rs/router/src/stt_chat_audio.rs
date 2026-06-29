@@ -13,6 +13,8 @@ pub struct ChatAudioTranscriptionProvider {
     base_url: String,
     default_model: String,
     provider_name: String,
+    /// When true, send ONLY the `input_audio` content part — no text instruction. See `audio_only`.
+    audio_only: bool,
 }
 
 impl ChatAudioTranscriptionProvider {
@@ -29,7 +31,17 @@ impl ChatAudioTranscriptionProvider {
             base_url: base_url.into(),
             default_model: default_model.into(),
             provider_name: provider_name.into(),
+            audio_only: false,
         }
+    }
+
+    /// Send ONLY the `input_audio` content part, with no text-instruction part. A *dedicated* ASR
+    /// model — Qwen `qwen3-asr-flash` — rejects any non-audio part (`<400> … the dedicated task
+    /// `asr` … does not support this input`); a *general* multimodal model (Gemini) needs the
+    /// "transcribe this" instruction. Default `false` (instruction included). Set `true` for Qwen.
+    pub fn audio_only(mut self, yes: bool) -> Self {
+        self.audio_only = yes;
+        self
     }
 
     fn fail(&self, msg: String) -> TranscriptionResult {
@@ -62,20 +74,22 @@ impl TranscriptionProvider for ChatAudioTranscriptionProvider {
         let fmt = detect_audio_format(audio);
         let b64 = base64::engine::general_purpose::STANDARD.encode(audio);
         let data_url = format!("data:{};base64,{}", fmt.mime, b64);
-        let lang_hint = language
-            .filter(|l| !l.is_empty())
-            .map(|l| format!(" The spoken language is {l}."))
-            .unwrap_or_default();
+        // The audio part is always present. The text-instruction part is sent ONLY for general
+        // multimodal models (Gemini); a dedicated ASR model (Qwen) 400s on any non-audio part.
+        let mut content = vec![serde_json::json!(
+            {"type": "input_audio", "input_audio": {"data": data_url, "format": fmt.kind}}
+        )];
+        if !self.audio_only {
+            let lang_hint = language
+                .filter(|l| !l.is_empty())
+                .map(|l| format!(" The spoken language is {l}."))
+                .unwrap_or_default();
+            content.push(serde_json::json!({"type": "text", "text": format!(
+                "Transcribe this audio verbatim. Return only the transcript text, no commentary.{lang_hint}")}));
+        }
         let body = serde_json::json!({
             "model": model,
-            "messages": [{
-                "role": "user",
-                "content": [
-                    {"type": "input_audio", "input_audio": {"data": data_url, "format": fmt.kind}},
-                    {"type": "text", "text": format!(
-                        "Transcribe this audio verbatim. Return only the transcript text, no commentary.{lang_hint}")}
-                ]
-            }]
+            "messages": [{ "role": "user", "content": content }]
         });
         let url = format!("{}/chat/completions", self.base_url.trim_end_matches('/'));
         let resp = match self.client.post(&url).bearer_auth(&self.api_key).json(&body).send().await {
