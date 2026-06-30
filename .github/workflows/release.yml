@@ -1,0 +1,87 @@
+# QCue — Release (PUBLIC repo). On a v* tag (or manual dispatch with a tag) build the signed,
+# OTA-capable arm64 APK via the reusable Android Build, create the GitHub Release, attach the APK,
+# and print the on-VPS publish-release-manifest.sh command (the one step CI cannot do).
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (must already exist, e.g. v1.2.1)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/android-build.yml
+    with:
+      release_tag: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
+    secrets: inherit
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-apk
+          path: dist
+      - name: Resolve tag
+        id: tag
+        env:
+          EVENT: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          if [ "$EVENT" = "push" ]; then echo "tag=$REF_NAME" >> "$GITHUB_OUTPUT"; else echo "tag=$INPUT_TAG" >> "$GITHUB_OUTPUT"; fi
+      - name: Create release + upload APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+          NAME: ${{ needs.build.outputs.apk_name }}
+          SHA: ${{ needs.build.outputs.apk_sha256 }}
+          VC: ${{ needs.build.outputs.version_code }}
+          SIGNED: ${{ needs.build.outputs.signed }}
+          OTA: ${{ needs.build.outputs.ota }}
+        run: |
+          set -euo pipefail
+          if [ "$SIGNED" = "true" ] && [ "$OTA" = "true" ]; then kind="signed + OTA-capable"; else kind="TEST build (unsigned / no OTA)"; fi
+          extra="$(printf '\n\n---\n**Artifact:** %s (%s)\n**arm64 APK SHA-256:** %s\n**Android versionCode:** %s\n' "$NAME" "$kind" "$SHA" "$VC")"
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --title "$TAG" --generate-notes
+          fi
+          body="$(gh release view "$TAG" --json body --jq .body)"
+          gh release edit "$TAG" --notes "${body}${extra}"
+          gh release upload "$TAG" "dist/$NAME" --clobber
+      - name: Print on-VPS manifest-publish command (AU-R21)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ steps.tag.outputs.tag }}
+          NAME: ${{ needs.build.outputs.apk_name }}
+          SHA: ${{ needs.build.outputs.apk_sha256 }}
+          VC: ${{ needs.build.outputs.version_code }}
+          SEMVER: ${{ needs.build.outputs.semver }}
+        run: |
+          set -euo pipefail
+          asset_url="$(gh api "repos/${REPO}/releases/tags/${TAG}" --jq ".assets[] | select(.name==\"${NAME}\") | .url")" || asset_url="<asset_api_url>"
+          {
+            echo "## Next step — run ON THE VPS to arm the in-app updater (AU-R21)"
+            echo ""
+            echo '```sh'
+            echo "QCUE_RELEASE_MANIFEST=/opt/qcue/release-manifest.json \\"
+            echo "  scripts/publish-release-manifest.sh android ${VC} ${SEMVER} <min_supported_build> \\"
+            echo "    \"<changelog>\" ${asset_url} --apk-sha256 ${SHA}"
+            echo '```'
+            echo ""
+            echo "Then verify: \`curl https://app.qcue.cn/v1/app/release?platform=android\`"
+          } >> "$GITHUB_STEP_SUMMARY"

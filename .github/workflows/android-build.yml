@@ -1,0 +1,188 @@
+# QCue — Android arm64-v8a APK builder (PUBLIC repo). Shorebird release (OTA + AU-R21 SHA-256)
+# when SHOREBIRD_TOKEN is present; signed when keystore secrets are present. As a bare manual
+# dispatch it falls back to an unsigned/non-OTA TEST apk so it never fails for missing secrets.
+# As a release (release_tag set, called by release.yml) it REQUIRES signing + Shorebird.
+name: Android Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Set to treat as a release (requires signing + Shorebird). Leave blank for a test build."
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      release_tag:
+        required: false
+        type: string
+    outputs:
+      apk_sha256:
+        description: "SHA-256 (lowercase hex) of the staged arm64 APK"
+        value: ${{ jobs.build.outputs.apk_sha256 }}
+      version_code:
+        description: "Android versionCode (10000 + git commit count)"
+        value: ${{ jobs.build.outputs.version_code }}
+      semver:
+        description: "Marketing version parsed from pubspec.yaml"
+        value: ${{ jobs.build.outputs.semver }}
+      apk_name:
+        description: "Staged APK filename"
+        value: ${{ jobs.build.outputs.apk_name }}
+      signed:
+        description: "true if release-signed, false if debug-key fallback"
+        value: ${{ jobs.build.outputs.signed }}
+      ota:
+        description: "true if built via Shorebird (OTA-capable)"
+        value: ${{ jobs.build.outputs.ota }}
+    secrets:
+      SHOREBIRD_TOKEN:
+        required: false
+      ANDROID_KEYSTORE_BASE64:
+        required: false
+      ANDROID_KEYSTORE_PASSWORD:
+        required: false
+      ANDROID_KEY_ALIAS:
+        required: false
+      ANDROID_KEY_PASSWORD:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      apk_sha256: ${{ steps.build.outputs.apk_sha256 }}
+      version_code: ${{ steps.build.outputs.version_code }}
+      semver: ${{ steps.build.outputs.semver }}
+      apk_name: ${{ steps.build.outputs.apk_name }}
+      signed: ${{ steps.sign.outputs.signed }}
+      ota: ${{ steps.build.outputs.ota }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - uses: android-actions/setup-android@v3
+
+      - name: Detect release mode
+        id: mode
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          if [ -n "$RELEASE_TAG" ]; then echo "release=true" >> "$GITHUB_OUTPUT"; else echo "release=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Detect Shorebird token (boolean only)
+        id: sb
+        env:
+          SB: ${{ secrets.SHOREBIRD_TOKEN }}
+        run: |
+          if [ -n "$SB" ]; then echo "has=true" >> "$GITHUB_OUTPUT"; else echo "has=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Configure signing (reconstruct key.properties from secrets)
+        id: sign
+        working-directory: qcue_app/android
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KS_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KS_KEYPASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KS_B64" ] && [ -n "$KS_PASS" ] && [ -n "$KS_ALIAS" ] && [ -n "$KS_KEYPASS" ]; then
+            echo "$KS_B64" | base64 -d > app/upload-keystore.jks
+            {
+              echo "storePassword=$KS_PASS"
+              echo "keyPassword=$KS_KEYPASS"
+              echo "keyAlias=$KS_ALIAS"
+              echo "storeFile=$(pwd)/app/upload-keystore.jks"
+            } > key.properties
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+            echo "release signing configured"
+          else
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "no/partial keystore secrets -> debug-key fallback"
+          fi
+
+      - name: Enforce signing + OTA on a real release
+        if: steps.mode.outputs.release == 'true'
+        env:
+          SIGNED: ${{ steps.sign.outputs.signed }}
+          HAS_SB: ${{ steps.sb.outputs.has }}
+        run: |
+          if [ "$SIGNED" != "true" ]; then echo "::error::release build requires all four ANDROID_KEYSTORE_* secrets"; exit 1; fi
+          if [ "$HAS_SB" != "true" ]; then echo "::error::release build requires SHOREBIRD_TOKEN (OTA capability)"; exit 1; fi
+
+      - name: Setup Shorebird
+        if: steps.sb.outputs.has == 'true'
+        uses: shorebirdtech/setup-shorebird@v1
+
+      - name: Build arm64 APK (Shorebird release or flutter fallback)
+        id: build
+        working-directory: qcue_app
+        env:
+          SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+          HAS_SB: ${{ steps.sb.outputs.has }}
+          SIGNED: ${{ steps.sign.outputs.signed }}
+        run: |
+          set -euo pipefail
+          semver="$(grep -E '^version:' pubspec.yaml | sed -E 's/^version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+)\+.*/\1/')"
+          [ -n "$semver" ] || { echo "::error::could not parse semver from pubspec.yaml"; exit 1; }
+          build="$(git rev-list --count HEAD)"
+          vc=$((10000 + build))
+          echo "building $semver (versionCode=$vc, shorebird=$HAS_SB, signed=$SIGNED)"
+          flutter pub get
+          if [ "$HAS_SB" = "true" ]; then
+            shorebird release android --artifact apk --build-name "$semver" --build-number "$vc" --target-platform android-arm64
+            echo "ota=true" >> "$GITHUB_OUTPUT"
+          else
+            flutter build apk --release --build-name "$semver" --build-number "$vc" --target-platform android-arm64
+            echo "ota=false" >> "$GITHUB_OUTPUT"
+          fi
+          src="build/app/outputs/flutter-apk/app-release.apk"
+          [ -f "$src" ] || { echo "::error::expected build output missing: $src"; exit 1; }
+          if [ "$SIGNED" = "true" ]; then name="qcue-v${semver}-arm64-v8a.apk"; else name="qcue-v${semver}-arm64-v8a-DEBUGSIGNED-test.apk"; fi
+          cp -f "$src" "build/$name"
+          sha="$(sha256sum "build/$name" | cut -d' ' -f1 | tr 'A-F' 'a-f')"
+          echo "arm64 APK SHA-256: $sha"
+          {
+            echo "apk_sha256=$sha"
+            echo "version_code=$vc"
+            echo "semver=$semver"
+            echo "apk_name=$name"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Write RELEASE_INFO.txt
+        working-directory: qcue_app
+        env:
+          SEMVER: ${{ steps.build.outputs.semver }}
+          VC: ${{ steps.build.outputs.version_code }}
+          NAME: ${{ steps.build.outputs.apk_name }}
+          SHA: ${{ steps.build.outputs.apk_sha256 }}
+          SIGNED: ${{ steps.sign.outputs.signed }}
+          OTA: ${{ steps.build.outputs.ota }}
+        run: |
+          {
+            echo "semver=$SEMVER"
+            echo "version_code=$VC"
+            echo "apk_name=$NAME"
+            echo "apk_sha256=$SHA"
+            echo "signed=$SIGNED"
+            echo "ota=$OTA"
+          } > "build/RELEASE_INFO.txt"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: |
+            qcue_app/build/${{ steps.build.outputs.apk_name }}
+            qcue_app/build/RELEASE_INFO.txt
+          if-no-files-found: error
