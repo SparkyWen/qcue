@@ -181,17 +181,39 @@ jobs:
         run: flutter test
         continue-on-error: true
 
+  android-smoke:
+    name: Flutter · Android debug build (smoke)
+    needs: changes
+    if: needs.changes.outputs.flutter == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: qcue_app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: flutter build apk --debug (keyless smoke — proves the public repo builds)
+        run: flutter build apk --debug
+
   # Single required status check. Passes only if every needed job succeeded or was
   # legitimately skipped (path-filtered). Configure branch protection to require THIS job.
   ci-success:
     name: CI success
     if: always()
-    needs: [changes, rust-lint, rust-deny, rust-test, flutter]
+    needs: [changes, rust-lint, rust-deny, rust-test, flutter, android-smoke]
     runs-on: ubuntu-latest
     steps:
       - name: Verify no required job failed
         run: |
-          results="${{ needs.changes.result }} ${{ needs.rust-lint.result }} ${{ needs.rust-deny.result }} ${{ needs.rust-test.result }} ${{ needs.flutter.result }}"
+          results="${{ needs.changes.result }} ${{ needs.rust-lint.result }} ${{ needs.rust-deny.result }} ${{ needs.rust-test.result }} ${{ needs.flutter.result }} ${{ needs.android-smoke.result }}"
           echo "Job results: $results"
           for r in $results; do
             if [ "$r" != "success" ] && [ "$r" != "skipped" ]; then
